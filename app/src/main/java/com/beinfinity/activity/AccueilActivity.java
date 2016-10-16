@@ -3,18 +3,18 @@ package com.beinfinity.activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import centre.com.centre.R;
-import centre.com.centre.activity.BookingActivity;
-import centre.com.centre.activity.LoginActivity;
+import com.beinfinity.R;
 
 import com.beinfinity.tools.ProgressView;
 
@@ -28,6 +28,7 @@ public class AccueilActivity extends AppCompatActivity {
     private View mAccueilFormView;
 
     private PendingIntent pendingIntent;
+    private NfcAdapter mNfcAdapter;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
 
@@ -62,7 +63,7 @@ public class AccueilActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-       /** if (intent != null && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
+        if (intent != null && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             Parcelable[] rawMessages =
                     intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             if (rawMessages != null) {
@@ -76,7 +77,7 @@ public class AccueilActivity extends AppCompatActivity {
                     this.checkID("123456789");
                 }
             }
-        }*/
+        }
 
         // TODO: Faire test ici
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -85,13 +86,13 @@ public class AccueilActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mAdapter.enableForegroundDispatch(this, pendingIntent, intentFiltersArray, techListsArray);
+        this.mNfcAdapter.enableForegroundDispatch(this, this.pendingIntent, this.intentFiltersArray, this.techListsArray);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mAdapter.disableForegroundDispatch(this);
+        this.mNfcAdapter.disableForegroundDispatch(this);
     }
 
     public void goToParameters(View view) {

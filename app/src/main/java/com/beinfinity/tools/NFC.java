@@ -16,7 +16,7 @@ public class NFC {
     {
         NdefRecord[] records = new NdefRecord[2];
         records[0] = record;
-        records[1] = NdefRecord.createApplicationRecord("centre.com.centre");
+        records[1] = NdefRecord.createApplicationRecord("com.beinfinity");
         NdefMessage message = new NdefMessage(records);
 
 

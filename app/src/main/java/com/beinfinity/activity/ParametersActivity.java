@@ -17,7 +17,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import centre.com.centre.R;
+import com.beinfinity.R;
 
 import com.beinfinity.database.DbContract;
 import com.beinfinity.database.DbHelper;

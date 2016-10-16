@@ -21,7 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 
-import centre.com.centre.R;
+import com.beinfinity.R;
 import com.beinfinity.database.DbContract;
 import com.beinfinity.database.DbHelper;
 

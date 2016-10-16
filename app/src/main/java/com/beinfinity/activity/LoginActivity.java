@@ -15,8 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import centre.com.centre.R;
-import centre.com.centre.activity.ParametersActivity;
+import com.beinfinity.R;
 
 import com.beinfinity.tools.ProgressView;
 
