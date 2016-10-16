@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_accueil"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="centre.com.centre.activity.AccueilActivity">
+
+    <ProgressBar
+        android:id="@+id/accueil_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/accueil_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/accueil_image_nfc"
+            android:layout_width="500dp"
+            android:layout_height="300dp"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/accueil_message"
+            app:srcCompat="@mipmap/nfc_tap" />
+
+        <TextView
+            android:id="@+id/accueil_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/accueil_image_nfc"
+            android:text="@string/accueil_message"
+            android:textAlignment="center"
+            android:textSize="@dimen/accueil_text_size" />
+
+        <ImageButton
+            android:id="@+id/acceuil_preference"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:backgroundTint="@android:color/white"
+            android:onClick="goToParameters"
+            app:srcCompat="@mipmap/ic_parameters" />
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@+id/acceuil_preference"
+            android:layout_marginStart="25dp"
+            android:backgroundTint="@android:color/white"
+            android:onClick="checkID"
+            app:srcCompat="@android:drawable/arrow_down_float" />
+    </RelativeLayout>
+</RelativeLayout>

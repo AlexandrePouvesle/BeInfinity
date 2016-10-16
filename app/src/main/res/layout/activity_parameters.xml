@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:weightSum="1"
+    tools:context="centre.com.centre.activity.ParametersActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/parameters_title"
+        android:textAlignment="center"
+        android:textSize="@dimen/accueil_text_size" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="283dp"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_marginBottom="30sp"
+            android:layout_row="0"
+            android:text="@string/parameters_centre"
+            android:textSize="@dimen/label" />
+
+        <EditText
+            android:id="@+id/editTextCentreName"
+            android:layout_width="271dp"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:ems="10"
+            android:inputType="text" />
+
+        <TextView
+            android:layout_width="283dp"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_marginBottom="30sp"
+            android:layout_row="1"
+            android:text="@string/parameters_terrain"
+            android:textSize="@dimen/label" />
+
+    </GridLayout>
+
+    <ListView
+        android:id="@+id/listViewTerrain"
+        android:layout_width="wrap_content"
+        android:layout_height="303dp"
+        android:layout_weight="0.43" />
+
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textViewAjoutTerrain"
+            android:layout_width="283dp"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:text="@string/parameters_terrain_add_label"
+            android:textSize="@dimen/label" />
+
+        <EditText
+            android:id="@+id/editTextAddTerrain"
+            android:layout_width="271dp"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="1"
+            android:ems="10"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/buttonAdd"
+            android:layout_width="271dp"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_marginBottom="30sp"
+            android:layout_row="1"
+            android:onClick="AddTerrain"
+            android:text="@string/parameters_terrain_add" />
+    </GridLayout>
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30sp"
+        android:onClick="SaveEntries"
+        android:text="@string/parameters_save" />
+
+    <Button
+        android:id="@+id/buttonQuitterApp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30sp"
+        android:onClick="LeaveApp"
+        android:text="@string/parameters_quitter" />
+</LinearLayout>
