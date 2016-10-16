@@ -1,4 +1,4 @@
-package centre.com.centre.activity;
+package com.beinfinity.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +16,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import centre.com.centre.R;
-import centre.com.centre.tools.ProgressView;
+import centre.com.centre.activity.ParametersActivity;
+
+import com.beinfinity.tools.ProgressView;
 
 
 public class LoginActivity extends AppCompatActivity {

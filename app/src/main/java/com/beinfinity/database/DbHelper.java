@@ -1,10 +1,10 @@
-package centre.com.centre.database;
+package com.beinfinity.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import centre.com.centre.database.DbContract;
+import com.beinfinity.database.DbContract;
 
 public class DbHelper extends SQLiteOpenHelper {
 

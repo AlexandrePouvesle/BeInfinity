@@ -1,4 +1,4 @@
-package centre.com.centre.database;
+package com.beinfinity.database;
 
 import android.provider.BaseColumns;
 

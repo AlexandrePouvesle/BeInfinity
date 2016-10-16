@@ -1,4 +1,4 @@
-package centre.com.centre.activity;
+package com.beinfinity.activity;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -18,8 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import centre.com.centre.R;
-import centre.com.centre.database.DbContract;
-import centre.com.centre.database.DbHelper;
+
+import com.beinfinity.database.DbContract;
+import com.beinfinity.database.DbHelper;
 
 public class ParametersActivity extends AppCompatActivity {
 

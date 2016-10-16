@@ -1,4 +1,4 @@
-package centre.com.centre.tools;
+package com.beinfinity.tools;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

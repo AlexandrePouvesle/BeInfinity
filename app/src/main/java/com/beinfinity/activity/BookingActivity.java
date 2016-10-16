@@ -1,4 +1,4 @@
-package centre.com.centre.activity;
+package com.beinfinity.activity;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import centre.com.centre.R;
-import centre.com.centre.database.DbContract;
-import centre.com.centre.database.DbHelper;
+import com.beinfinity.database.DbContract;
+import com.beinfinity.database.DbHelper;
 
 public class BookingActivity extends AppCompatActivity {
 
