@@ -12,10 +12,12 @@ import java.util.Locale;
 
 public class NFC {
 
-    NdefMessage createNDefMessage(NdefRecord record)
+    public static NdefMessage createNDefMessage(NdefRecord record)
     {
         NdefRecord[] records = new NdefRecord[2];
+        // si le AAR ne marche pas, mettre un filtre en [0] du record et config le manifest
         records[0] = record;
+        // Ajout du AAR
         records[1] = NdefRecord.createApplicationRecord("com.beinfinity");
         NdefMessage message = new NdefMessage(records);
 
@@ -23,7 +25,7 @@ public class NFC {
         return message;
     }
 
-    NdefRecord createReccord(String message)
+    public static NdefRecord createRecord(String message)
     {
         byte[] langBytes = Locale.FRANCE.getLanguage().getBytes(Charset.forName("US-ASCII"));
         byte[] textBytes = message.getBytes(Charset.forName("UTF-8"));

@@ -1,5 +1,6 @@
 package com.beinfinity.activity;
 
+import android.app.ActionBar;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -45,7 +46,7 @@ public class AccueilActivity extends AppCompatActivity {
 
         progressView = new ProgressView(mAccueilFormView, mProgressView);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(
+        this.pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         try {
@@ -86,13 +87,13 @@ public class AccueilActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        this.mNfcAdapter.enableForegroundDispatch(this, this.pendingIntent, this.intentFiltersArray, this.techListsArray);
+        // this.mNfcAdapter.enableForegroundDispatch(this, this.pendingIntent, this.intentFiltersArray, this.techListsArray);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        this.mNfcAdapter.disableForegroundDispatch(this);
+        // this.mNfcAdapter.disableForegroundDispatch(this);
     }
 
     public void goToParameters(View view) {
