@@ -9,15 +9,18 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/fond_base"
     tools:context="com.beinfinity.activity.LoginActivity">
 
-    <!-- Login progress -->
-    <ImageView
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="204dp"
-        android:layout_marginTop="100sp"
-        app:srcCompat="@mipmap/icone_login"
-        android:id="@+id/imageView" />
+        android:layout_height="wrap_content"
+        android:text="@string/login_title"
+        android:textAlignment="textEnd"
+        android:paddingBottom="80sp"
+        android:paddingTop="15sp"
+        android:textSize="@dimen/accueil_text_size" />
 
     <ProgressBar
         android:id="@+id/login_progress"

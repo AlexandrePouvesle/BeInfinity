@@ -9,17 +9,18 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@android:color/holo_green_dark"
+    android:background="@drawable/fond_booking"
     tools:context="com.beinfinity.activity.BookingActivity">
 
     <TextView
         android:id="@+id/booking_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
+        android:textAlignment="textEnd"
+        android:textColor="@android:color/black"
         android:textSize="@dimen/accueil_text_size"
-        android:layout_marginBottom="50dp" />
+        android:paddingBottom="80sp"
+        android:paddingTop="15sp"/>
 
     <TextView
         android:id="@+id/booking_DateDuJour"
@@ -28,64 +29,43 @@
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="@dimen/accueil_text_size"
-        android:layout_marginBottom="50dp" />
+        android:layout_marginBottom="140dp"
+        />
 
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="283dp"
-            android:layout_height="wrap_content"
-            android:layout_column="0"
-            android:layout_marginBottom="30sp"
-            android:layout_row="0"
-            android:textColor="@android:color/white"
-            android:text="@string/booking_terrain"
-            android:textSize="@dimen/label" />
-
-        <Spinner
-            android:id="@+id/booking_spinnerTerrain"
-            android:layout_width="283dp"
-            android:layout_height="wrap_content"
-            android:layout_column="1"
-            android:layout_row="0"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/label"  />
-
-        <TextView
-            android:layout_width="283dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30sp"
-            android:layout_column="0"
-            android:layout_row="1"
-            android:textColor="@android:color/white"
-            android:text="@string/booking_heure_debut"
-            android:textSize="@dimen/label"/>
-
-        <TimePicker
-            android:id="@+id/simpleTimePicker"
-            android:layout_width="wrap_content"
-            android:layout_height="147dp"
-            android:layout_column="1"
-            android:layout_row="1"
-            android:textColor="@android:color/white"
-            android:timePickerMode="spinner"/>
-
-    </GridLayout>
-
-    <TextView
-        android:layout_width="match_parent"
+    <Spinner
+        android:id="@+id/booking_spinnerTerrain"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30sp"
+        android:layout_marginStart="250sp"
         android:textColor="@android:color/white"
-        android:text="@string/booking_duree"
-        android:textSize="@dimen/label" />
+        android:background="@android:color/white"
+        android:textSize="@dimen/label"  />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="313dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="20sp"
+        android:weightSum="1">
+
+    <TimePicker
+        android:id="@+id/simpleTimePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="147dp"
+        android:layout_marginStart="80sp"
+        android:layout_marginTop="150sp"
+        android:textColor="@android:color/white"
+        android:timePickerMode="spinner"/>
+
 
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
+        android:layout_marginTop="150sp"
+        android:layout_marginStart="140sp"
         android:weightSum="1">
 
         <RadioButton
@@ -125,20 +105,30 @@
             android:text="@string/booking_quatre" />
     </RadioGroup>
 
-    <Button
-        android:id="@+id/buttonValider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30sp"
-        android:onClick="Valider"
-        android:text="@string/booking_valider"
-        android:layout_marginTop="30dp"/>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonAnnuler"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30sp"
-        android:onClick="Annuler"
-        android:text="@string/booking_annuler" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/buttonValider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="Valider"
+            android:text="@string/booking_valider"
+            android:layout_weight="0.3"
+            android:layout_marginLeft="110sp"/>
+
+        <Button
+            android:id="@+id/buttonAnnuler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="Annuler"
+            android:text="@string/booking_annuler"
+            android:layout_weight="0.3" />
+
+        </LinearLayout>
 </LinearLayout>

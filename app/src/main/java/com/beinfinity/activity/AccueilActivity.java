@@ -46,15 +46,18 @@ public class AccueilActivity extends AppCompatActivity {
 
         progressView = new ProgressView(mAccueilFormView, mProgressView);
 
-        this.pendingIntent = PendingIntent.getActivity(
+        this.mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+         this.pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
+
+        IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         try {
-            ndef.addDataType("*/*");    /* Handles all MIME based dispatches.
-                                       You should specify only the ones that you need. */
+            ndef.addDataType("*/*");
         } catch (IntentFilter.MalformedMimeTypeException e) {
             throw new RuntimeException("fail", e);
         }
+
         this.intentFiltersArray = new IntentFilter[]{ndef,};
         this.techListsArray = new String[][]{new String[]{
                 MifareClassic.class.getName()
@@ -64,8 +67,9 @@ public class AccueilActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent != null && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-            Parcelable[] rawMessages =
+        //Toast.makeText(this,"tagggggggg", Toast.LENGTH_SHORT);
+       /* if (intent != null && NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
+           Parcelable[] rawMessages =
                     intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             if (rawMessages != null) {
                 NdefMessage[] messages = new NdefMessage[rawMessages.length];
@@ -78,22 +82,24 @@ public class AccueilActivity extends AppCompatActivity {
                     this.checkID("123456789");
                 }
             }
-        }
+        }*/
 
         // TODO: Faire test ici
-        Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        //Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+        this.checkID("12345678");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // this.mNfcAdapter.enableForegroundDispatch(this, this.pendingIntent, this.intentFiltersArray, this.techListsArray);
+        this.mNfcAdapter.enableForegroundDispatch(this, this.pendingIntent, this.intentFiltersArray, this.techListsArray);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // this.mNfcAdapter.disableForegroundDispatch(this);
+         this.mNfcAdapter.disableForegroundDispatch(this);
     }
 
     public void goToParameters(View view) {

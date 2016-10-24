@@ -10,49 +10,21 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/fond_accueil"
     tools:context="com.beinfinity.activity.AccueilActivity">
 
     <ProgressBar
         android:id="@+id/accueil_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_centerInParent="true"
+        android:layout_marginTop="750sp"
+        android:layout_marginLeft="260sp"
         android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/accueil_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <ImageView
-            android:id="@+id/accueil_image_nfc"
-            android:layout_width="500dp"
-            android:layout_height="300dp"
-            android:layout_centerInParent="true"
-            android:contentDescription="@string/accueil_message"
-            app:srcCompat="@mipmap/nfc_tap" />
-
-        <TextView
-            android:id="@+id/accueil_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/accueil_image_nfc"
-            android:text="@string/accueil_message"
-            android:textAlignment="center"
-            android:textSize="@dimen/accueil_text_size" />
-
-        <ImageButton
-            android:id="@+id/acceuil_preference"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:backgroundTint="@android:color/white"
-            android:onClick="goToParameters"
-            app:srcCompat="@mipmap/ic_parameters" />
 
         <ImageButton
             android:id="@+id/imageButton2"
@@ -64,5 +36,17 @@
             android:backgroundTint="@android:color/white"
             android:onClick="checkID"
             app:srcCompat="@android:drawable/arrow_down_float" />
+
+        <ImageButton
+            android:id="@+id/acceuil_preference"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/white"
+            android:onClick="goToParameters"
+            app:srcCompat="@mipmap/ic_reglage"
+            android:layout_above="@+id/imageButton2"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="509dp"
+            android:layout_marginBottom="768dp" />
     </RelativeLayout>
 </RelativeLayout>

@@ -33,6 +33,7 @@
     <string name="booking_toast">Bon match</string>
     <string name="parameters_toast">Paramètres sauvegardés</string>
     <string name="accueil_toast_echec">Echec d\'identification</string>
+    <string name="login_title">Authentification</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <!--<string name="hello_blank_fragment">Hello blank fragment</string> -->

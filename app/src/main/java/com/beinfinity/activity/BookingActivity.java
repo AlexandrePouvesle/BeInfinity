@@ -90,8 +90,8 @@ public class BookingActivity extends AppCompatActivity {
 
     public void Valider(View view) {
         String terrain = (String) this.spinnerTerrain.getSelectedItem();
-        int heureDebut = this.simpleTimePicker.getHour();
-        int minuteDebut = this.simpleTimePicker.getMinute();
+        int heureDebut = this.simpleTimePicker.getCurrentHour();
+        int minuteDebut = this.simpleTimePicker.getCurrentMinute();
         String timeDebut = heureDebut + ":" + minuteDebut;
         String timeFin = (heureDebut + this.supprHour) + ":" + minuteDebut;
 
@@ -162,7 +162,7 @@ public class BookingActivity extends AppCompatActivity {
         textViewTitle.setText(center);
 
         Date aujourdhui = new Date();
-        SimpleDateFormat formater = new SimpleDateFormat("dd-MM-yyyy", Locale.FRANCE);
+        SimpleDateFormat formater = new SimpleDateFormat("E dd MMMM yyyy", Locale.FRANCE);
         textViewDateJour.setText(formater.format(aujourdhui));
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(aujourdhui);
@@ -176,8 +176,10 @@ public class BookingActivity extends AppCompatActivity {
             minute = 30;
         }
 
-        this.simpleTimePicker.setHour(hour);
-        this.simpleTimePicker.setMinute(minute);
+        //this.simpleTimePicker.setHour(hour);
+        //this.simpleTimePicker.setMinute(minute);
+        this.simpleTimePicker.setCurrentMinute(hour);
+        this.simpleTimePicker.setCurrentMinute(minute);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, terrains);
