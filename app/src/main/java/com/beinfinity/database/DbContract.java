@@ -30,19 +30,16 @@ public class DbContract {
                 DbContract.TerrainEntry.COLUMN_NAME_TITLE
         };
 
-
         public static final String TABLE_NAME = "Terrain";
         public static final String COLUMN_NAME_TITLE = "name";
     }
 
     public static class BookingEntry implements BaseColumns {
 
-
-
         public static final String TABLE_NAME = "Booking";
         public static final String COLUMN_NAME_TERRAIN = "terrain";
         public static final String COLUMN_NAME_DATE = "date";
         public static final String COLUMN_NAME_HEURE_DEBUT = "debut";
-        public static final String COLUMN_NAME_HEURE_FIN = "fin";
+        public static final String COLUMN_NAME_DUREE = "duree";
     }
 }

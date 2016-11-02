@@ -24,10 +24,13 @@ import java.util.Locale;
 import com.beinfinity.R;
 import com.beinfinity.database.DbContract;
 import com.beinfinity.database.DbHelper;
+import com.beinfinity.model.BookingDto;
+import com.beinfinity.tools.Http;
 
 public class BookingActivity extends AppCompatActivity {
 
     private static final String CENTRE_NAME = "centerName";
+    private static final String URL_NAME = "urlname";
 
     private HashMap<String, String> parameters;
     private ArrayList<String> terrains;
@@ -39,6 +42,7 @@ public class BookingActivity extends AppCompatActivity {
     private RadioButton radioButton;
 
     private int supprHour;
+    private String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,7 @@ public class BookingActivity extends AppCompatActivity {
 
         // Initialisation des variables
         this.supprHour = 1;
+        this.url = "";
         this.radioButton.setChecked(true);
         this.simpleTimePicker.setIs24HourView(true);
         this.terrains = new ArrayList<>();
@@ -92,22 +97,33 @@ public class BookingActivity extends AppCompatActivity {
         String terrain = (String) this.spinnerTerrain.getSelectedItem();
         int heureDebut = this.simpleTimePicker.getCurrentHour();
         int minuteDebut = this.simpleTimePicker.getCurrentMinute();
-        String timeDebut = heureDebut + ":" + minuteDebut;
-        String timeFin = (heureDebut + this.supprHour) + ":" + minuteDebut;
 
+        Calendar c = Calendar.getInstance();
+        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), heureDebut, minuteDebut, 0);
 
-        DbHelper dbHelper = new DbHelper(getBaseContext());
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        BookingDto dto = new BookingDto();
+        dto.setTerrain(terrain);
+        dto.setHeureDebut(c);
+        dto.setDuree(this.supprHour);
 
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DATE, this.textViewDateJour.getText().toString());
-        initialValues.put(DbContract.BookingEntry.COLUMN_NAME_HEURE_DEBUT, timeDebut);
-        initialValues.put(DbContract.BookingEntry.COLUMN_NAME_HEURE_FIN, timeFin);
-        initialValues.put(DbContract.BookingEntry.COLUMN_NAME_TERRAIN, terrain);
+        Boolean isSended = this.SendBooking(dto);
 
-        db.insert(DbContract.BookingEntry.TABLE_NAME,null,initialValues);
-        db.close();
-        Toast.makeText(getApplicationContext(),getString(R.string.booking_toast), Toast.LENGTH_SHORT).show();
+        // On enregistre en base de données si pas envoyer
+        if (!isSended) {
+            DbHelper dbHelper = new DbHelper(getBaseContext());
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+            ContentValues initialValues = new ContentValues();
+            initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DATE, this.textViewDateJour.getText().toString());
+            initialValues.put(DbContract.BookingEntry.COLUMN_NAME_HEURE_DEBUT, c.getTimeInMillis());
+            initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DUREE, this.supprHour);
+            initialValues.put(DbContract.BookingEntry.COLUMN_NAME_TERRAIN, terrain);
+
+            db.insert(DbContract.BookingEntry.TABLE_NAME, null, initialValues);
+            db.close();
+        }
+
+        Toast.makeText(getApplicationContext(), getString(R.string.booking_toast), Toast.LENGTH_SHORT).show();
         this.finish();
     }
 
@@ -130,7 +146,7 @@ public class BookingActivity extends AppCompatActivity {
                 null                                 // The sort order
         );
         c.moveToFirst();
-        while (c.isLast()) {
+        while (!c.isLast()) {
             String name = c.getString(c.getColumnIndexOrThrow(DbContract.ParameterEntry.COLUMN_NAME_TITLE));
             String content = c.getString(c.getColumnIndexOrThrow(DbContract.ParameterEntry.COLUMN_NAME_CONTENT));
             parameters.put(name, content);
@@ -160,6 +176,7 @@ public class BookingActivity extends AppCompatActivity {
     private void FillElement() {
         String center = parameters.get(CENTRE_NAME);
         textViewTitle.setText(center);
+        url = parameters.get(URL_NAME);
 
         Date aujourdhui = new Date();
         SimpleDateFormat formater = new SimpleDateFormat("E dd MMMM yyyy", Locale.FRANCE);
@@ -184,5 +201,20 @@ public class BookingActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, terrains);
         this.spinnerTerrain.setAdapter(adapter);
+    }
+
+    private Boolean SendBooking(BookingDto dto) {
+        HashMap<String, String> postDataParams = new HashMap<>();
+        postDataParams.put("terrain", dto.getTerrain());
+        postDataParams.put("duree", dto.getDuree().toString());
+        postDataParams.put("heure", String.valueOf(dto.getHeureDebut().getTimeInMillis()));
+
+        String response = Http.SendPostRequest(this.url + "booking.php", postDataParams);
+
+        if (response.equals("success")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

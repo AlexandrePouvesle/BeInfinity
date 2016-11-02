@@ -4,11 +4,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.nfc.NdefMessage;
-import android.nfc.NfcAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,9 +24,12 @@ import com.beinfinity.database.DbHelper;
 public class ParametersActivity extends AppCompatActivity {
 
     private static final String CENTRE_NAME = "centerName";
+    private static final String URL_NAME = "urlname";
+    private static final String URL = "http://beinfiny.fr/";
 
     private ListView mListView;
     private EditText edtTxtCenterName;
+    private EditText edtTxtUrlName;
     private EditText edtTxtAddTerrain;
     private ArrayAdapter<String> adapter;
 
@@ -44,6 +44,8 @@ public class ParametersActivity extends AppCompatActivity {
         // Récupération des éléments de la vue
         edtTxtCenterName = (EditText) findViewById(R.id.editTextCentreName);
         edtTxtAddTerrain = (EditText) findViewById(R.id.editTextAddTerrain);
+        edtTxtUrlName = (EditText) findViewById(R.id.editTextUrlName);
+
         mListView = (ListView) findViewById(R.id.listViewTerrain);
 
         // Initialisation des variables
@@ -81,19 +83,25 @@ public class ParametersActivity extends AppCompatActivity {
 
     public void SaveEntries(View view) {
         String centreName = edtTxtCenterName.getText().toString();
+        String urlName = edtTxtUrlName.getText().toString();
 
         DbHelper dbHelper = new DbHelper(getBaseContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        ContentValues initialValues = new ContentValues();
-        initialValues.put("_id", 1);
-        initialValues.put(DbContract.ParameterEntry.COLUMN_NAME_TITLE, CENTRE_NAME);
-        initialValues.put(DbContract.ParameterEntry.COLUMN_NAME_CONTENT, centreName);
+        // On supprime tous les paramètres (évite la gestion des indexs)
+        db.delete(DbContract.BookingEntry.TABLE_NAME, null, null);
 
-        int id = (int) db.insertWithOnConflict(DbContract.ParameterEntry.TABLE_NAME, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
-        if (id == -1) {
-            db.update(DbContract.ParameterEntry.TABLE_NAME, initialValues, "_id=?", new String[]{"1"});  // number 1 is the _id here, update to variable for your code
-        }
+        ContentValues centreValues = new ContentValues();
+        centreValues.put(DbContract.ParameterEntry.COLUMN_NAME_TITLE, CENTRE_NAME);
+        centreValues.put(DbContract.ParameterEntry.COLUMN_NAME_CONTENT, centreName);
+
+        db.insert(DbContract.TerrainEntry.TABLE_NAME, null, centreValues);
+
+        ContentValues urlValues = new ContentValues();
+        urlValues.put(DbContract.ParameterEntry.COLUMN_NAME_TITLE, URL_NAME);
+        urlValues.put(DbContract.ParameterEntry.COLUMN_NAME_CONTENT, urlName);
+
+        db.insert(DbContract.TerrainEntry.TABLE_NAME, null, urlValues);
 
         // On supprime tous les terrains (évite la gestion des indexs)
         db.delete(DbContract.TerrainEntry.TABLE_NAME, null, null);
@@ -102,8 +110,7 @@ public class ParametersActivity extends AppCompatActivity {
         for (String terrain : terrains) {
             ContentValues terrainsValues = new ContentValues();
             terrainsValues.put(DbContract.TerrainEntry.COLUMN_NAME_TITLE, terrain);
-            long value = db.insert(DbContract.TerrainEntry.TABLE_NAME, null, terrainsValues);
-            Log.d("Putin de valeur", "toot : " + value);
+            db.insert(DbContract.TerrainEntry.TABLE_NAME, null, terrainsValues);
         }
 
         Toast.makeText(getApplicationContext(), getString(R.string.parameters_toast), Toast.LENGTH_SHORT).show();
@@ -153,7 +160,14 @@ public class ParametersActivity extends AppCompatActivity {
 
     private void FillParameters() {
         String center = parameters.get(CENTRE_NAME);
+        String url = parameters.get(URL_NAME);
+
+        if (url == null || url.isEmpty()) {
+            url = URL;
+        }
+
         edtTxtCenterName.setText(center);
+        edtTxtUrlName.setText(url);
 
         this.adapter = new ArrayAdapter<>(ParametersActivity.this,
                 android.R.layout.simple_list_item_1, terrains);

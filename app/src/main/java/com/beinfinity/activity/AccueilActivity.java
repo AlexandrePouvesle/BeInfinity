@@ -1,12 +1,10 @@
 package com.beinfinity.activity;
 
-import android.app.ActionBar;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.AsyncTask;
 import android.os.Parcelable;
@@ -17,7 +15,10 @@ import android.widget.Toast;
 
 import com.beinfinity.R;
 
+import com.beinfinity.tools.Http;
 import com.beinfinity.tools.ProgressView;
+
+import java.util.HashMap;
 
 public class AccueilActivity extends AppCompatActivity {
 
@@ -48,7 +49,7 @@ public class AccueilActivity extends AppCompatActivity {
 
         this.mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
-         this.pendingIntent = PendingIntent.getActivity(
+        this.pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
@@ -67,9 +68,8 @@ public class AccueilActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        //Toast.makeText(this,"tagggggggg", Toast.LENGTH_SHORT);
-       /* if (intent != null && NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
-           Parcelable[] rawMessages =
+        if (intent != null && NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
+            Parcelable[] rawMessages =
                     intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             if (rawMessages != null) {
                 NdefMessage[] messages = new NdefMessage[rawMessages.length];
@@ -78,16 +78,12 @@ public class AccueilActivity extends AppCompatActivity {
                 }
 
                 if (messages.length > 0) {
-                    // TODO: Faire ici l'adaptation en fonction du contenu du tag
-                    this.checkID("123456789");
+                    // TODO: Faire vérification  suppl si nécessaire
+                    String message = new String(messages[0].getRecords()[0].getPayload());
+                    this.checkID(message);
                 }
             }
-        }*/
-
-        // TODO: Faire test ici
-        //Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-        this.checkID("12345678");
+        }
     }
 
     @Override
@@ -99,7 +95,7 @@ public class AccueilActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-         this.mNfcAdapter.disableForegroundDispatch(this);
+        this.mNfcAdapter.disableForegroundDispatch(this);
     }
 
     public void goToParameters(View view) {
@@ -124,7 +120,15 @@ public class AccueilActivity extends AppCompatActivity {
 
     private Boolean checkIDCard(String idCard) {
         //TODO: mettre ici la vérification de l'existance de la carte ou de sa validité
-        return true;
+        HashMap<String, String> postDataParams = new HashMap<>();
+        postDataParams.put("id", idCard);
+        String response = Http.SendGetRequest("http://beinfiny.fr/test.php");
+
+        if (response.equals("success")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public class UserAuthTask extends AsyncTask<Void, Void, Boolean> {
@@ -137,17 +141,13 @@ public class AccueilActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
             Boolean isOk = false;
             try {
-                //TODO: Simulate network access.
                 Thread.sleep(2000);
                 isOk = checkIDCard(this.idCard);
             } catch (InterruptedException e) {
                 return false;
             }
-
-            // TODO: register the new account here.
             return isOk;
         }
 
@@ -158,7 +158,6 @@ public class AccueilActivity extends AppCompatActivity {
 
             if (success) {
                 GoToBooking();
-                // finish();
             } else {
                 Toast.makeText(getApplicationContext(), getString(R.string.accueil_toast_echec), Toast.LENGTH_LONG).show();
             }

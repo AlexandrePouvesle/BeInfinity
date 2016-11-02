@@ -123,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isPasswordValid(String login, String password) {
         //TODO: Mettre ici la vérification du login / password
-        return password.length() > 4;
+        return password.equals("Beinfiny2016") && login.equals("admin");
     }
 
     /**

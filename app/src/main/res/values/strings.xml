@@ -20,6 +20,7 @@
     <string name="parameters_quitter">Quitter l\'application</string>
     <string name="parameters_terrain_add_label">Ajouter un terrain:</string>
     <string name="parameters_terrain_add">Ajouter:</string>
+    <string name="parameters_url">Url du serveur</string>
     <string name="parameters_save">Enregistrer les modifications</string>
     <string name="booking_terrain">Terrain:</string>
     <string name="booking_heure_debut">Heure début:</string>
