@@ -95,13 +95,13 @@ public class ParametersActivity extends AppCompatActivity {
         centreValues.put(DbContract.ParameterEntry.COLUMN_NAME_TITLE, CENTRE_NAME);
         centreValues.put(DbContract.ParameterEntry.COLUMN_NAME_CONTENT, centreName);
 
-        db.insert(DbContract.TerrainEntry.TABLE_NAME, null, centreValues);
+        db.insert(DbContract.ParameterEntry.TABLE_NAME, null, centreValues);
 
         ContentValues urlValues = new ContentValues();
         urlValues.put(DbContract.ParameterEntry.COLUMN_NAME_TITLE, URL_NAME);
         urlValues.put(DbContract.ParameterEntry.COLUMN_NAME_CONTENT, urlName);
 
-        db.insert(DbContract.TerrainEntry.TABLE_NAME, null, urlValues);
+        db.insert(DbContract.ParameterEntry.TABLE_NAME, null, urlValues);
 
         // On supprime tous les terrains (évite la gestion des indexs)
         db.delete(DbContract.TerrainEntry.TABLE_NAME, null, null);

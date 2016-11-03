@@ -37,6 +37,7 @@ public class BookingActivity extends AppCompatActivity {
 
     private TextView textViewTitle;
     private TextView textViewDateJour;
+    private TextView textViewDisplayName;
     private TimePicker simpleTimePicker;
     private Spinner spinnerTerrain;
     private RadioButton radioButton;
@@ -52,6 +53,7 @@ public class BookingActivity extends AppCompatActivity {
         // Récupération des éléments de la vue
         this.textViewTitle = (TextView) findViewById(R.id.booking_title);
         this.textViewDateJour = (TextView) findViewById(R.id.booking_DateDuJour);
+        this.textViewDisplayName  = (TextView) findViewById(R.id.booking_Display_Name);
         this.simpleTimePicker = (TimePicker) findViewById(R.id.simpleTimePicker);
         this.spinnerTerrain = (Spinner) findViewById(R.id.booking_spinnerTerrain);
         this.radioButton = (RadioButton) findViewById(R.id.radio_un);
@@ -67,6 +69,8 @@ public class BookingActivity extends AppCompatActivity {
         // Récupération des données
         this.GetDb();
         this.FillElement();
+
+        this.textViewDisplayName.setText("Rudi");
     }
 
     public void onRadioButtonClicked(View view) {

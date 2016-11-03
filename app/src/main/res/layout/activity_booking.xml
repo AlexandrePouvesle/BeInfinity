@@ -4,33 +4,41 @@
     android:id="@+id/activity_booking"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/fond_booking"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/fond_booking"
     tools:context="com.beinfinity.activity.BookingActivity">
 
     <TextView
         android:id="@+id/booking_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="80sp"
+        android:paddingTop="15sp"
         android:textAlignment="textEnd"
         android:textColor="@android:color/black"
-        android:textSize="@dimen/accueil_text_size"
-        android:paddingBottom="80sp"
-        android:paddingTop="15sp"/>
+        android:textSize="@dimen/accueil_text_size" />
+
+
+    <TextView
+        android:id="@+id/booking_Display_Name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/accueil_text_size" />
 
     <TextView
         android:id="@+id/booking_DateDuJour"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="90dp"
         android:textAlignment="center"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/accueil_text_size"
-        android:layout_marginBottom="140dp"
-        />
+        android:textSize="@dimen/accueil_text_size" />
 
 
     <Spinner
@@ -38,72 +46,72 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="250sp"
-        android:textColor="@android:color/white"
         android:background="@android:color/white"
-        android:textSize="@dimen/label"  />
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/label" />
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="313dp"
-        android:orientation="horizontal"
         android:layout_marginTop="20sp"
+        android:orientation="horizontal"
         android:weightSum="1">
 
-    <TimePicker
-        android:id="@+id/simpleTimePicker"
-        android:layout_width="wrap_content"
-        android:layout_height="147dp"
-        android:layout_marginStart="80sp"
-        android:layout_marginTop="150sp"
-        android:textColor="@android:color/white"
-        android:timePickerMode="spinner"/>
-
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="150sp"
-        android:layout_marginStart="140sp"
-        android:weightSum="1">
-
-        <RadioButton
-            android:id="@+id/radio_un"
-            android:layout_width="125dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.29"
+        <TimePicker
+            android:id="@+id/simpleTimePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="147dp"
+            android:layout_marginStart="80sp"
+            android:layout_marginTop="150sp"
             android:textColor="@android:color/white"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/booking_un" />
+            android:timePickerMode="spinner" />
 
-        <RadioButton
-            android:id="@+id/radio_deux"
-            android:layout_width="125dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.32"
-            android:textColor="@android:color/white"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/booking_deux" />
 
-        <RadioButton
-            android:id="@+id/radio_trois"
-            android:layout_width="125dp"
+        <RadioGroup
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.43"
-            android:textColor="@android:color/white"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/booking_trois" />
+            android:layout_marginStart="140sp"
+            android:layout_marginTop="150sp"
+            android:orientation="vertical"
+            android:weightSum="1">
 
-        <RadioButton
-            android:id="@+id/radio_quatre"
-            android:layout_width="125dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.43"
-            android:textColor="@android:color/white"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/booking_quatre" />
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/radio_un"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.29"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/booking_un"
+                android:textColor="@android:color/white" />
+
+            <RadioButton
+                android:id="@+id/radio_deux"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.32"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/booking_deux"
+                android:textColor="@android:color/white" />
+
+            <RadioButton
+                android:id="@+id/radio_trois"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.43"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/booking_trois"
+                android:textColor="@android:color/white" />
+
+            <RadioButton
+                android:id="@+id/radio_quatre"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.43"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/booking_quatre"
+                android:textColor="@android:color/white" />
+        </RadioGroup>
 
     </LinearLayout>
 
@@ -117,18 +125,18 @@
             android:id="@+id/buttonValider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="Valider"
-            android:text="@string/booking_valider"
+            android:layout_marginLeft="110sp"
             android:layout_weight="0.3"
-            android:layout_marginLeft="110sp"/>
+            android:onClick="Valider"
+            android:text="@string/booking_valider" />
 
         <Button
             android:id="@+id/buttonAnnuler"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="0.3"
             android:onClick="Annuler"
-            android:text="@string/booking_annuler"
-            android:layout_weight="0.3" />
+            android:text="@string/booking_annuler" />
 
-        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

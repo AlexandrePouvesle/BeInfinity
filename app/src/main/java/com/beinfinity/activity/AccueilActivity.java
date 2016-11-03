@@ -33,6 +33,7 @@ public class AccueilActivity extends AppCompatActivity {
     private NfcAdapter mNfcAdapter;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
+    private String reason;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,14 +120,12 @@ public class AccueilActivity extends AppCompatActivity {
     }
 
     private Boolean checkIDCard(String idCard) {
-        //TODO: mettre ici la vérification de l'existance de la carte ou de sa validité
-        HashMap<String, String> postDataParams = new HashMap<>();
-        postDataParams.put("id", idCard);
-        String response = Http.SendGetRequest("http://beinfiny.fr/test.php");
+        String response = Http.SendGetRequest("http://beinfiny.fr/app/login.php?id=" + idCard.substring(3));
 
-        if (response.equals("success")) {
+        if (!response.contains("expired") && !response.contains("unregistered")) {
             return true;
         } else {
+            this.reason = response;
             return false;
         }
     }
@@ -159,7 +158,13 @@ public class AccueilActivity extends AppCompatActivity {
             if (success) {
                 GoToBooking();
             } else {
-                Toast.makeText(getApplicationContext(), getString(R.string.accueil_toast_echec), Toast.LENGTH_LONG).show();
+                if (reason.contains("unregistered")) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.accueil_toast_unregistered), Toast.LENGTH_LONG).show();
+                } else if (reason.contains("expired")) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.accueil_toast_expired), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.accueil_toast_echec), Toast.LENGTH_LONG).show();
+                }
             }
         }
 

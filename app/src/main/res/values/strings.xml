@@ -34,6 +34,8 @@
     <string name="booking_toast">Bon match</string>
     <string name="parameters_toast">Paramètres sauvegardés</string>
     <string name="accueil_toast_echec">Echec d\'identification</string>
+    <string name="accueil_toast_unregistered">Utilisateur inconnu.</string>
+    <string name="accueil_toast_expired">Votre abonnement est expiré.</string>
     <string name="login_title">Authentification</string>
 
     <!-- TODO: Remove or change this placeholder text -->
