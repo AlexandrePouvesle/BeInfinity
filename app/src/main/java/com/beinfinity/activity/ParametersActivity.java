@@ -11,8 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,20 +22,23 @@ import com.beinfinity.R;
 
 import com.beinfinity.database.DbContract;
 import com.beinfinity.database.DbHelper;
+import com.beinfinity.tools.Http;
 
 public class ParametersActivity extends AppCompatActivity {
 
     private static final String CENTRE_NAME = "centerName";
+    private static final String CENTRE_ID = "centerId";
     private static final String URL_NAME = "urlname";
-    private static final String URL = "http://beinfiny.fr/";
+    private static final String URL = "http://beinfiny.fr/app/";
 
     private ListView mListView;
-    private EditText edtTxtCenterName;
     private EditText edtTxtUrlName;
     private EditText edtTxtAddTerrain;
     private ArrayAdapter<String> adapter;
+    private Spinner spinnerCentre;
 
     private HashMap<String, String> parameters;
+    private HashMap<String, Integer> centres;
     private ArrayList<String> terrains;
 
     @Override
@@ -42,19 +47,20 @@ public class ParametersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_parameters);
 
         // Récupération des éléments de la vue
-        edtTxtCenterName = (EditText) findViewById(R.id.editTextCentreName);
         edtTxtAddTerrain = (EditText) findViewById(R.id.editTextAddTerrain);
         edtTxtUrlName = (EditText) findViewById(R.id.editTextUrlName);
-
+        spinnerCentre = (Spinner) findViewById(R.id.booking_spinnerCentre);
         mListView = (ListView) findViewById(R.id.listViewTerrain);
 
         // Initialisation des variables
         parameters = new HashMap<>();
         terrains = new ArrayList<>();
+        centres = new HashMap<>();
 
         // Récupération des données
         this.GetDataFromDb();
         this.FillParameters();
+        this.GetCentres();
     }
 
     @Override
@@ -82,7 +88,7 @@ public class ParametersActivity extends AppCompatActivity {
     }
 
     public void SaveEntries(View view) {
-        String centreName = edtTxtCenterName.getText().toString();
+        String centreName = (String) spinnerCentre.getSelectedItem();
         String urlName = edtTxtUrlName.getText().toString();
 
         DbHelper dbHelper = new DbHelper(getBaseContext());
@@ -96,6 +102,13 @@ public class ParametersActivity extends AppCompatActivity {
         centreValues.put(DbContract.ParameterEntry.COLUMN_NAME_CONTENT, centreName);
 
         db.insert(DbContract.ParameterEntry.TABLE_NAME, null, centreValues);
+
+        Integer id = this.centres.get(centreName);
+        ContentValues centreIdValues = new ContentValues();
+        centreIdValues.put(DbContract.ParameterEntry.COLUMN_NAME_TITLE, CENTRE_ID);
+        centreIdValues.put(DbContract.ParameterEntry.COLUMN_NAME_CONTENT, id.toString());
+
+        db.insert(DbContract.ParameterEntry.TABLE_NAME, null, centreIdValues);
 
         ContentValues urlValues = new ContentValues();
         urlValues.put(DbContract.ParameterEntry.COLUMN_NAME_TITLE, URL_NAME);
@@ -159,14 +172,12 @@ public class ParametersActivity extends AppCompatActivity {
     }
 
     private void FillParameters() {
-        String center = parameters.get(CENTRE_NAME);
         String url = parameters.get(URL_NAME);
 
         if (url == null || url.isEmpty()) {
             url = URL;
         }
 
-        edtTxtCenterName.setText(center);
         edtTxtUrlName.setText(url);
 
         this.adapter = new ArrayAdapter<>(ParametersActivity.this,
@@ -184,5 +195,34 @@ public class ParametersActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void GetCentres() {
+        String centerFromDb = parameters.get(CENTRE_NAME);
+        String response = null;
+        try {
+            response = Http.SendGetRequest(parameters.get(URL_NAME) + "centres.php");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, getString(R.string.echecConnexion), Toast.LENGTH_SHORT).show();
+        }
+
+        if (!response.isEmpty()) {
+            ArrayList<String> tmpCentre = new ArrayList<>();
+            String[] centres = response.split(";");
+            for (String centre : centres) {
+                int id = Integer.getInteger(centre.split(",")[0]);
+                String name = centre.split(",")[1];
+                this.centres.put(name, id);
+                tmpCentre.add(name);
+            }
+            ArrayAdapter adapter = new ArrayAdapter<>(ParametersActivity.this,
+                    android.R.layout.simple_list_item_1, tmpCentre);
+            spinnerCentre.setAdapter(adapter);
+            if (!centerFromDb.isEmpty()) {
+                int pos = ((ArrayAdapter) spinnerCentre.getAdapter()).getPosition(centerFromDb);
+                spinnerCentre.setSelection(pos);
+            }
+        }
     }
 }

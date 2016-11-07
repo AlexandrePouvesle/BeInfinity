@@ -20,7 +20,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class Http {
 
-    public static String SendGetRequest(String requestURL){
+    public static String SendGetRequest(String requestURL) throws IOException {
         URL url;
         HttpURLConnection urlConnection = null;
         String server_response = "";
@@ -37,8 +37,10 @@ public class Http {
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            throw e;
         } catch (IOException e) {
             e.printStackTrace();
+            throw e;
         }
 
         return server_response;

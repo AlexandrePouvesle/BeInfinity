@@ -37,6 +37,8 @@
     <string name="accueil_toast_unregistered">Utilisateur inconnu.</string>
     <string name="accueil_toast_expired">Votre abonnement est expiré.</string>
     <string name="login_title">Authentification</string>
+    <string name="displayName">displayName</string>
+    <string name="echecConnexion">Echec de connexion avec le serveur.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <!--<string name="hello_blank_fragment">Hello blank fragment</string> -->

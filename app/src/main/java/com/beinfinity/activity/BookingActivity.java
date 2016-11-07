@@ -1,6 +1,7 @@
 package com.beinfinity.activity;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,6 +33,7 @@ import com.beinfinity.tools.Http;
 public class BookingActivity extends AppCompatActivity {
 
     private static final String CENTRE_NAME = "centerName";
+    private static final String CENTRE_ID = "centerId";
     private static final String URL_NAME = "urlname";
 
     private HashMap<String, String> parameters;
@@ -44,6 +48,7 @@ public class BookingActivity extends AppCompatActivity {
 
     private int supprHour;
     private String url;
+    private String abonne;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +58,7 @@ public class BookingActivity extends AppCompatActivity {
         // Récupération des éléments de la vue
         this.textViewTitle = (TextView) findViewById(R.id.booking_title);
         this.textViewDateJour = (TextView) findViewById(R.id.booking_DateDuJour);
-        this.textViewDisplayName  = (TextView) findViewById(R.id.booking_Display_Name);
+        this.textViewDisplayName = (TextView) findViewById(R.id.booking_Display_Name);
         this.simpleTimePicker = (TimePicker) findViewById(R.id.simpleTimePicker);
         this.spinnerTerrain = (Spinner) findViewById(R.id.booking_spinnerTerrain);
         this.radioButton = (RadioButton) findViewById(R.id.radio_un);
@@ -70,7 +75,10 @@ public class BookingActivity extends AppCompatActivity {
         this.GetDb();
         this.FillElement();
 
-        this.textViewDisplayName.setText("Rudi");
+        // Récupération du nom de l'utilisateur
+        Intent myIntent = getIntent();
+        this.abonne = myIntent.getStringExtra(getString(R.string.displayName));
+        this.textViewDisplayName.setText(this.abonne);
     }
 
     public void onRadioButtonClicked(View view) {
@@ -106,6 +114,7 @@ public class BookingActivity extends AppCompatActivity {
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), heureDebut, minuteDebut, 0);
 
         BookingDto dto = new BookingDto();
+        dto.setCentre(Integer.getInteger(this.parameters.get(CENTRE_ID)));
         dto.setTerrain(terrain);
         dto.setHeureDebut(c);
         dto.setDuree(this.supprHour);
@@ -208,12 +217,25 @@ public class BookingActivity extends AppCompatActivity {
     }
 
     private Boolean SendBooking(BookingDto dto) {
-        HashMap<String, String> postDataParams = new HashMap<>();
-        postDataParams.put("terrain", dto.getTerrain());
-        postDataParams.put("duree", dto.getDuree().toString());
-        postDataParams.put("heure", String.valueOf(dto.getHeureDebut().getTimeInMillis()));
+        // booking.php?centre=1&abonne=1&date=%272016-11-03%27&heure=%2720:00:00%27&duree=2&terrain=%27Zidane%27
 
-        String response = Http.SendPostRequest(this.url + "booking.php", postDataParams);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.FRANCE);
+        DateFormat dateFormat2 = new SimpleDateFormat("HH:mm:ss", Locale.FRANCE);
+        Date date = new Date();
+
+
+        String param = "centre=" + dto.getCentre()
+                + "abonne=" + this.abonne
+                + "date=\"" + dateFormat.format(date)
+                + "\"heure=\"" + dateFormat2.format(dto.getHeureDebut().getTime())
+                + "\"duree=" + dto.getDuree()
+                + "terrain=" + dto.getTerrain();
+
+        String response = null;
+        try {
+            response = Http.SendGetRequest(this.url + "booking.php?" + param);
+        } catch (IOException e) {
+        }
 
         if (response.equals("success")) {
             return true;

@@ -7,6 +7,15 @@ public class BookingDto {
     private String Terrain;
     private Calendar HeureDebut;
     private Integer Duree;
+    private Integer Centre;
+
+    public Integer getCentre() {
+        return Centre;
+    }
+
+    public void setCentre(Integer centre) {
+        Centre = centre;
+    }
 
     public Integer getDuree() {
         return Duree;

@@ -3,6 +3,8 @@ package com.beinfinity.activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.MifareClassic;
@@ -15,12 +17,17 @@ import android.widget.Toast;
 
 import com.beinfinity.R;
 
+import com.beinfinity.database.DbContract;
+import com.beinfinity.database.DbHelper;
 import com.beinfinity.tools.Http;
 import com.beinfinity.tools.ProgressView;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 public class AccueilActivity extends AppCompatActivity {
+
+    private static final String URL_NAME = "urlname";
 
     private UserAuthTask mAuthTask = null;
     private ProgressView progressView;
@@ -34,12 +41,15 @@ public class AccueilActivity extends AppCompatActivity {
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
     private String reason;
+    private String displayName;
+    private HashMap<String, String> parameters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accueil);
 
+        this.parameters = new HashMap<>();
         this.shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         // Récupération des éléments de la vue
@@ -116,13 +126,45 @@ public class AccueilActivity extends AppCompatActivity {
 
     private void GoToBooking() {
         Intent intent = new Intent(this, BookingActivity.class);
+        intent.putExtra(getString(R.string.displayName), this.displayName);
         startActivity(intent);
     }
 
+    private void GetDataFromDb() {
+        DbHelper dbHelper = new DbHelper(getBaseContext());
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // LECTURE DES DONNEES DE PARAMETRAGE
+        Cursor c = db.query(
+                DbContract.ParameterEntry.TABLE_NAME,                     // The table to query
+                DbContract.ParameterEntry.ProjectionParameter,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+        c.moveToFirst();
+        while (c.isLast()) {
+            String name = c.getString(c.getColumnIndexOrThrow(DbContract.ParameterEntry.COLUMN_NAME_TITLE));
+            String content = c.getString(c.getColumnIndexOrThrow(DbContract.ParameterEntry.COLUMN_NAME_CONTENT));
+            parameters.put(name, content);
+            c.moveToNext();
+        }
+        db.close();
+    }
+
     private Boolean checkIDCard(String idCard) {
-        String response = Http.SendGetRequest("http://beinfiny.fr/app/login.php?id=" + idCard.substring(3));
+        String url = this.parameters.get(URL_NAME);
+        String response = null;
+        try {
+            response = Http.SendGetRequest(url + "login.php?id=" + idCard.substring(3));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         if (!response.contains("expired") && !response.contains("unregistered")) {
+            this.displayName = response;
             return true;
         } else {
             this.reason = response;
