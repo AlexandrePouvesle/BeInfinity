@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -30,6 +31,8 @@ import com.beinfinity.database.DbHelper;
 import com.beinfinity.model.BookingDto;
 import com.beinfinity.tools.Http;
 
+import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
+
 public class BookingActivity extends AppCompatActivity {
 
     private static final String CENTRE_NAME = "centerName";
@@ -47,8 +50,8 @@ public class BookingActivity extends AppCompatActivity {
     private RadioButton radioButton;
 
     private int supprHour;
-    private String url;
     private String abonne;
+    private String idCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +68,6 @@ public class BookingActivity extends AppCompatActivity {
 
         // Initialisation des variables
         this.supprHour = 1;
-        this.url = "";
         this.radioButton.setChecked(true);
         this.simpleTimePicker.setIs24HourView(true);
         this.terrains = new ArrayList<>();
@@ -78,6 +80,7 @@ public class BookingActivity extends AppCompatActivity {
         // Récupération du nom de l'utilisateur
         Intent myIntent = getIntent();
         this.abonne = myIntent.getStringExtra(getString(R.string.displayName));
+        this.idCard = myIntent.getStringExtra(getString(R.string.idCard));
         this.textViewDisplayName.setText(this.abonne);
     }
 
@@ -114,30 +117,12 @@ public class BookingActivity extends AppCompatActivity {
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), heureDebut, minuteDebut, 0);
 
         BookingDto dto = new BookingDto();
-        dto.setCentre(Integer.getInteger(this.parameters.get(CENTRE_ID)));
+        dto.setCentre(Integer.parseInt(this.parameters.get(CENTRE_ID)));
         dto.setTerrain(terrain);
         dto.setHeureDebut(c);
         dto.setDuree(this.supprHour);
 
-        Boolean isSended = this.SendBooking(dto);
-
-        // On enregistre en base de données si pas envoyer
-        if (!isSended) {
-            DbHelper dbHelper = new DbHelper(getBaseContext());
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-            ContentValues initialValues = new ContentValues();
-            initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DATE, this.textViewDateJour.getText().toString());
-            initialValues.put(DbContract.BookingEntry.COLUMN_NAME_HEURE_DEBUT, c.getTimeInMillis());
-            initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DUREE, this.supprHour);
-            initialValues.put(DbContract.BookingEntry.COLUMN_NAME_TERRAIN, terrain);
-
-            db.insert(DbContract.BookingEntry.TABLE_NAME, null, initialValues);
-            db.close();
-        }
-
-        Toast.makeText(getApplicationContext(), getString(R.string.booking_toast), Toast.LENGTH_SHORT).show();
-        this.finish();
+        this.SendBooking(dto);
     }
 
     public void Annuler(View view) {
@@ -189,7 +174,6 @@ public class BookingActivity extends AppCompatActivity {
     private void FillElement() {
         String center = parameters.get(CENTRE_NAME);
         textViewTitle.setText(center);
-        url = parameters.get(URL_NAME);
 
         Date aujourdhui = new Date();
         SimpleDateFormat formater = new SimpleDateFormat("E dd MMMM yyyy", Locale.FRANCE);
@@ -216,31 +200,68 @@ public class BookingActivity extends AppCompatActivity {
         this.spinnerTerrain.setAdapter(adapter);
     }
 
-    private Boolean SendBooking(BookingDto dto) {
+    private void SendBooking(BookingDto dto) {
         // booking.php?centre=1&abonne=1&date=%272016-11-03%27&heure=%2720:00:00%27&duree=2&terrain=%27Zidane%27
+        Traitement traitementBooking = new Traitement(dto);
+        traitementBooking.execute((Void) null);
+    }
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.FRANCE);
-        DateFormat dateFormat2 = new SimpleDateFormat("HH:mm:ss", Locale.FRANCE);
-        Date date = new Date();
+    public class Traitement extends AsyncTask<Void, Void, Boolean> {
 
+        private final BookingDto dto;
 
-        String param = "centre=" + dto.getCentre()
-                + "abonne=" + this.abonne
-                + "date=\"" + dateFormat.format(date)
-                + "\"heure=\"" + dateFormat2.format(dto.getHeureDebut().getTime())
-                + "\"duree=" + dto.getDuree()
-                + "terrain=" + dto.getTerrain();
-
-        String response = null;
-        try {
-            response = Http.SendGetRequest(this.url + "booking.php?" + param);
-        } catch (IOException e) {
+        public Traitement(BookingDto dto) {
+            this.dto = dto;
         }
 
-        if (response.equals("success")) {
-            return true;
-        } else {
-            return false;
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String url = parameters.get(URL_NAME);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.FRANCE);
+            DateFormat dateFormat2 = new SimpleDateFormat("HH:mm:ss", Locale.FRANCE);
+            Date date = new Date();
+
+            String param = "centre=" + dto.getCentre()
+                    + "&&abonne=" + idCard
+                    + "&&date=\"" + dateFormat.format(date)
+                    + "\"&&heure=\"" + dateFormat2.format(dto.getHeureDebut().getTime())
+                    + "\"&&duree=" + dto.getDuree()
+                    + "&&terrain=\"" + dto.getTerrain()+"\"";
+
+            String response = null;
+            try {
+                response = Http.SendGetRequest(url + "booking.php?" + param);
+            } catch (IOException e) {
+            }
+
+            if (response.equals("OK")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+
+        @Override
+        protected void onPostExecute(final Boolean isSended) {
+
+            // On enregistre en base de données si pas envoyer
+            if (!isSended) {
+                DbHelper dbHelper = new DbHelper(getBaseContext());
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+                ContentValues initialValues = new ContentValues();
+                initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DATE, textViewDateJour.getText().toString());
+                //initialValues.put(DbContract.BookingEntry.COLUMN_NAME_HEURE_DEBUT, c.getTimeInMillis());
+                initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DUREE, supprHour);
+                //initialValues.put(DbContract.BookingEntry.COLUMN_NAME_TERRAIN, terrain);
+
+                db.insert(DbContract.BookingEntry.TABLE_NAME, null, initialValues);
+                db.close();
+            }
+
+            Toast.makeText(getApplicationContext(), getString(R.string.booking_toast), Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 }

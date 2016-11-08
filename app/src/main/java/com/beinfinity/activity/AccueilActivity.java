@@ -43,6 +43,7 @@ public class AccueilActivity extends AppCompatActivity {
     private String reason;
     private String displayName;
     private HashMap<String, String> parameters;
+    private String idCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +75,8 @@ public class AccueilActivity extends AppCompatActivity {
         this.techListsArray = new String[][]{new String[]{
                 MifareClassic.class.getName()
         }};
+
+        this.GetDataFromDb();
     }
 
     @Override
@@ -127,6 +130,7 @@ public class AccueilActivity extends AppCompatActivity {
     private void GoToBooking() {
         Intent intent = new Intent(this, BookingActivity.class);
         intent.putExtra(getString(R.string.displayName), this.displayName);
+        intent.putExtra(getString(R.string.idCard), this.idCard);
         startActivity(intent);
     }
 
@@ -145,7 +149,7 @@ public class AccueilActivity extends AppCompatActivity {
                 null                                 // The sort order
         );
         c.moveToFirst();
-        while (c.isLast()) {
+        while (!c.isAfterLast()) {
             String name = c.getString(c.getColumnIndexOrThrow(DbContract.ParameterEntry.COLUMN_NAME_TITLE));
             String content = c.getString(c.getColumnIndexOrThrow(DbContract.ParameterEntry.COLUMN_NAME_CONTENT));
             parameters.put(name, content);
@@ -158,7 +162,8 @@ public class AccueilActivity extends AppCompatActivity {
         String url = this.parameters.get(URL_NAME);
         String response = null;
         try {
-            response = Http.SendGetRequest(url + "login.php?id=" + idCard.substring(3));
+            this.idCard = idCard.substring(3);
+            response = Http.SendGetRequest(url + "login.php?id=" + this.idCard);
         } catch (IOException e) {
             e.printStackTrace();
         }

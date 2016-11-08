@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -144,7 +145,7 @@ public class ParametersActivity extends AppCompatActivity {
                 null                                 // The sort order
         );
         c.moveToFirst();
-        while (c.isLast()) {
+        while (!c.isAfterLast()) {
             String name = c.getString(c.getColumnIndexOrThrow(DbContract.ParameterEntry.COLUMN_NAME_TITLE));
             String content = c.getString(c.getColumnIndexOrThrow(DbContract.ParameterEntry.COLUMN_NAME_CONTENT));
             parameters.put(name, content);
@@ -198,30 +199,50 @@ public class ParametersActivity extends AppCompatActivity {
     }
 
     private void GetCentres() {
-        String centerFromDb = parameters.get(CENTRE_NAME);
-        String response = null;
-        try {
-            response = Http.SendGetRequest(parameters.get(URL_NAME) + "centres.php");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, getString(R.string.echecConnexion), Toast.LENGTH_SHORT).show();
+        Traitement traitementCentres = new Traitement();
+        traitementCentres.execute((Void) null);
+    }
+
+    public class Traitement extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String url = parameters.get(URL_NAME);
+
+            if (url == null || url.isEmpty()) {
+                url = URL;
+            }
+            String response = null;
+            try {
+                response = Http.SendGetRequest(url + "centres.php");
+            } catch (IOException e) {
+            }
+            return response;
         }
 
-        if (!response.isEmpty()) {
-            ArrayList<String> tmpCentre = new ArrayList<>();
-            String[] centres = response.split(";");
-            for (String centre : centres) {
-                int id = Integer.getInteger(centre.split(",")[0]);
-                String name = centre.split(",")[1];
-                this.centres.put(name, id);
-                tmpCentre.add(name);
-            }
-            ArrayAdapter adapter = new ArrayAdapter<>(ParametersActivity.this,
-                    android.R.layout.simple_list_item_1, tmpCentre);
-            spinnerCentre.setAdapter(adapter);
-            if (!centerFromDb.isEmpty()) {
-                int pos = ((ArrayAdapter) spinnerCentre.getAdapter()).getPosition(centerFromDb);
-                spinnerCentre.setSelection(pos);
+
+        @Override
+        protected void onPostExecute(final String response) {
+
+            if (!response.isEmpty()) {
+                String centerFromDb = parameters.get(CENTRE_NAME);
+                ArrayList<String> tmpCentre = new ArrayList<>();
+                String[] centresResponse = response.split(";");
+                for (String centre : centresResponse) {
+                    int id = Integer.parseInt(centre.split(",")[0]);
+                    String name = centre.split(",")[1];
+                    centres.put(name, id);
+                    tmpCentre.add(name);
+                }
+                ArrayAdapter adapter = new ArrayAdapter<>(ParametersActivity.this,
+                        android.R.layout.simple_list_item_1, tmpCentre);
+                spinnerCentre.setAdapter(adapter);
+                if (centerFromDb != null && !centerFromDb.isEmpty()) {
+                    int pos = ((ArrayAdapter) spinnerCentre.getAdapter()).getPosition(centerFromDb);
+                    spinnerCentre.setSelection(pos);
+                }
+            } else {
+                Toast.makeText(ParametersActivity.this, getString(R.string.echecConnexion), Toast.LENGTH_SHORT).show();
             }
         }
     }
