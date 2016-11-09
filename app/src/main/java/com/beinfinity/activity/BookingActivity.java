@@ -206,7 +206,7 @@ public class BookingActivity extends AppCompatActivity {
         traitementBooking.execute((Void) null);
     }
 
-    public class Traitement extends AsyncTask<Void, Void, Boolean> {
+    public class Traitement extends AsyncTask<Void, Void, Integer> {
 
         private final BookingDto dto;
 
@@ -215,38 +215,40 @@ public class BookingActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Integer doInBackground(Void... params) {
             String url = parameters.get(URL_NAME);
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.FRANCE);
-            DateFormat dateFormat2 = new SimpleDateFormat("HH:mm:ss", Locale.FRANCE);
-            Date date = new Date();
+            DateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd%20HH:mm:ss", Locale.FRANCE);
 
-            String param = "centre=" + dto.getCentre()
-                    + "&&abonne=" + idCard
-                    + "&&date=\"" + dateFormat.format(date)
-                    + "\"&&heure=\"" + dateFormat2.format(dto.getHeureDebut().getTime())
-                    + "\"&&duree=" + dto.getDuree()
-                    + "&&terrain=\"" + dto.getTerrain()+"\"";
+            Calendar dateFin = (Calendar) dto.getHeureDebut().clone();
+            dateFin.add(Calendar.HOUR, dto.getDuree());
+
+            String param = "centre=\"" + dto.getCentre()
+                    + "\"&abonne=\"" + idCard
+                    + "\"&dateDebut=\"" + dateFormat2.format(dto.getHeureDebut().getTime())
+                    + "\"&dateFin=\"" + dateFormat2.format(dateFin.getTime())
+                    + "\"&duree=\"" + dto.getDuree()
+                    + "\"&terrain=\"" + dto.getTerrain() + "\"";
 
             String response = null;
             try {
                 response = Http.SendGetRequest(url + "booking.php?" + param);
             } catch (IOException e) {
+                return -1;
             }
 
             if (response.equals("OK")) {
-                return true;
+                return 0;
             } else {
-                return false;
+                return -2;
             }
         }
 
 
         @Override
-        protected void onPostExecute(final Boolean isSended) {
+        protected void onPostExecute(final Integer codeReponse) {
 
             // On enregistre en base de données si pas envoyer
-            if (!isSended) {
+            if (codeReponse == -1) {
                 DbHelper dbHelper = new DbHelper(getBaseContext());
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -258,10 +260,15 @@ public class BookingActivity extends AppCompatActivity {
 
                 db.insert(DbContract.BookingEntry.TABLE_NAME, null, initialValues);
                 db.close();
-            }
 
-            Toast.makeText(getApplicationContext(), getString(R.string.booking_toast), Toast.LENGTH_SHORT).show();
-            finish();
+                Toast.makeText(getApplicationContext(), getString(R.string.booking_toast), Toast.LENGTH_SHORT).show();
+                finish();
+            } else if (codeReponse == -2) {
+                Toast.makeText(getApplicationContext(), getString(R.string.booking_echec), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), getString(R.string.booking_toast), Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 }

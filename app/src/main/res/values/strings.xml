@@ -40,6 +40,7 @@
     <string name="displayName">displayName</string>
     <string name="echecConnexion">Echec de connexion avec le serveur.</string>
     <string name="idCard">idCard</string>
+    <string name="booking_echec">Une réservation existe déjà à votre nom.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <!--<string name="hello_blank_fragment">Hello blank fragment</string> -->
