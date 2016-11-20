@@ -9,10 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.RadioButton;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -31,8 +30,6 @@ import com.beinfinity.database.DbHelper;
 import com.beinfinity.model.BookingDto;
 import com.beinfinity.tools.Http;
 
-import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
-
 public class BookingActivity extends AppCompatActivity {
 
     private static final String CENTRE_NAME = "centerName";
@@ -45,11 +42,11 @@ public class BookingActivity extends AppCompatActivity {
     private TextView textViewTitle;
     private TextView textViewDateJour;
     private TextView textViewDisplayName;
-    private TimePicker simpleTimePicker;
     private Spinner spinnerTerrain;
-    private RadioButton radioButton;
+    private NumberPicker numberDuree;
+    private NumberPicker numberMinDebut;
+    private NumberPicker numberHeureDebut;
 
-    private int supprHour;
     private String abonne;
     private String idCard;
 
@@ -62,14 +59,25 @@ public class BookingActivity extends AppCompatActivity {
         this.textViewTitle = (TextView) findViewById(R.id.booking_title);
         this.textViewDateJour = (TextView) findViewById(R.id.booking_DateDuJour);
         this.textViewDisplayName = (TextView) findViewById(R.id.booking_Display_Name);
-        this.simpleTimePicker = (TimePicker) findViewById(R.id.simpleTimePicker);
         this.spinnerTerrain = (Spinner) findViewById(R.id.booking_spinnerTerrain);
-        this.radioButton = (RadioButton) findViewById(R.id.radio_un);
+        this.numberDuree = (NumberPicker) findViewById(R.id.numberPickerDuree);
+        this.numberMinDebut = (NumberPicker) findViewById(R.id.numberPickerMinDebut);
+        this.numberHeureDebut = (NumberPicker) findViewById(R.id.numberPickerHeureDebut);
 
         // Initialisation des variables
-        this.supprHour = 1;
-        this.radioButton.setChecked(true);
-        this.simpleTimePicker.setIs24HourView(true);
+        this.numberDuree.setMinValue(0);
+        this.numberDuree.setMaxValue(4);
+        this.numberDuree.setWrapSelectorWheel(true);
+        this.numberDuree.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        this.numberHeureDebut.setMinValue(0);
+        this.numberHeureDebut.setMaxValue(23);
+        this.numberHeureDebut.setWrapSelectorWheel(true);
+        this.numberHeureDebut.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        this.numberMinDebut.setMinValue(0);
+        this.numberMinDebut.setMaxValue(1);
+        this.numberMinDebut.setWrapSelectorWheel(true);
+        this.numberMinDebut.setDisplayedValues(new String[]{"0", "30"});
+        this.numberMinDebut.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         this.terrains = new ArrayList<>();
         this.parameters = new HashMap<>();
 
@@ -84,34 +92,11 @@ public class BookingActivity extends AppCompatActivity {
         this.textViewDisplayName.setText(this.abonne);
     }
 
-    public void onRadioButtonClicked(View view) {
-        boolean checked = ((RadioButton) view).isChecked();
-
-        // On récupère la valeur de la checkbox sélectionnée
-        switch (view.getId()) {
-            case R.id.radio_un:
-                if (checked)
-                    supprHour = 1;
-                break;
-            case R.id.radio_deux:
-                if (checked)
-                    supprHour = 2;
-                break;
-            case R.id.radio_trois:
-                if (checked)
-                    supprHour = 3;
-                break;
-            case R.id.radio_quatre:
-                if (checked)
-                    supprHour = 4;
-                break;
-        }
-    }
-
     public void Valider(View view) {
         String terrain = (String) this.spinnerTerrain.getSelectedItem();
-        int heureDebut = this.simpleTimePicker.getCurrentHour();
-        int minuteDebut = this.simpleTimePicker.getCurrentMinute();
+        int heureDebut = this.numberHeureDebut.getValue();
+        int minuteDebut = this.numberMinDebut.getValue() == 1 ? 30 : 0;
+        int duree = this.numberDuree.getValue();
 
         Calendar c = Calendar.getInstance();
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), heureDebut, minuteDebut, 0);
@@ -120,7 +105,7 @@ public class BookingActivity extends AppCompatActivity {
         dto.setCentre(Integer.parseInt(this.parameters.get(CENTRE_ID)));
         dto.setTerrain(terrain);
         dto.setHeureDebut(c);
-        dto.setDuree(this.supprHour);
+        dto.setDuree(duree);
 
         this.SendBooking(dto);
     }
@@ -187,13 +172,16 @@ public class BookingActivity extends AppCompatActivity {
             hour++;
             minute = 0;
         } else {
-            minute = 30;
+            minute = 1;
         }
 
         //this.simpleTimePicker.setHour(hour);
         //this.simpleTimePicker.setMinute(minute);
-        this.simpleTimePicker.setCurrentMinute(hour);
-        this.simpleTimePicker.setCurrentMinute(minute);
+        //this.simpleTimePicker.setCurrentMinute(hour);
+        //this.simpleTimePicker.setCurrentMinute(minute);
+        // TODO
+        this.numberMinDebut.setValue(minute);
+        this.numberHeureDebut.setValue(hour);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, terrains);
@@ -255,7 +243,7 @@ public class BookingActivity extends AppCompatActivity {
                 ContentValues initialValues = new ContentValues();
                 initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DATE, textViewDateJour.getText().toString());
                 //initialValues.put(DbContract.BookingEntry.COLUMN_NAME_HEURE_DEBUT, c.getTimeInMillis());
-                initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DUREE, supprHour);
+                initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DUREE, numberDuree.getValue());
                 //initialValues.put(DbContract.BookingEntry.COLUMN_NAME_TERRAIN, terrain);
 
                 db.insert(DbContract.BookingEntry.TABLE_NAME, null, initialValues);
