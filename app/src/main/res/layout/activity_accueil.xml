@@ -34,7 +34,6 @@
             android:layout_alignStart="@+id/acceuil_preference"
             android:layout_marginStart="25dp"
             android:backgroundTint="@android:color/white"
-            android:onClick="checkID"
             app:srcCompat="@android:drawable/arrow_down_float" />
 
         <ImageButton

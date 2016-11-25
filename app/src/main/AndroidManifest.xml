@@ -11,10 +11,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Pour spécifier qu'il faut le NFC sur l'appareil sinon s'installe pas-->
+
+    <!-- Pour spécifier qu'il faut le NFC sur l'appareil sinon s'installe pas
     <uses-feature
         android:name="android.hardware.nfc"
-        android:required="true" />
+        android:required="true" />-->
+
+    <uses-feature android:name="android.hardware.usb.host" />
 
     <application
         android:allowBackup="true"
@@ -23,13 +26,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.beinfinity.activity.AccueilActivity"
+            android:name="com.beinfinity.activity.MainActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <!-- NFC -->
-                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+                <!-- NFC <action android:name="android.nfc.action.TAG_DISCOVERED" /> -->
+
             </intent-filter>
         </activity>
         <activity
