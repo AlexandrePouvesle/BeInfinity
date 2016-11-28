@@ -65,8 +65,8 @@ public class MainActivity extends Activity {
     private String idCard;
     private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
 
-    private static final String[] stateStrings = { "Unknown", "Absent",
-            "Present", "Swallowed", "Powered", "Negotiable", "Specific" };
+    private static final String[] stateStrings = {"Unknown", "Absent",
+            "Present", "Swallowed", "Powered", "Negotiable", "Specific"};
 
     private UsbManager mManager;
     private Reader mReader;
@@ -177,12 +177,15 @@ public class MainActivity extends Activity {
 
     }
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        // setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_accueil);
         this.parameters = new HashMap<>();
         this.shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -285,23 +288,22 @@ public class MainActivity extends Activity {
     /**
      * Logs the message.
      *
-     * @param msg
-     *            the message.
+     * @param msg the message.
      */
     private void logMsg(String msg) {
 
         DateFormat dateFormat = new SimpleDateFormat("[dd-MM-yyyy HH:mm:ss]: ");
         Date date = new Date();
-        String oldMsg = mResponseTextView.getText().toString();
-
-        mResponseTextView
-                .setText(oldMsg + "\n" + dateFormat.format(date) + msg);
-
-        if (mResponseTextView.getLineCount() > MAX_LINES) {
-            mResponseTextView.scrollTo(0,
-                    (mResponseTextView.getLineCount() - MAX_LINES)
-                            * mResponseTextView.getLineHeight());
-        }
+//        String oldMsg = mResponseTextView.getText().toString();
+//
+//        mResponseTextView
+//                .setText(oldMsg + "\n" + dateFormat.format(date) + msg);
+//
+//        if (mResponseTextView.getLineCount() > MAX_LINES) {
+//            mResponseTextView.scrollTo(0,
+//                    (mResponseTextView.getLineCount() - MAX_LINES)
+//                            * mResponseTextView.getLineHeight());
+//        }
     }
 
     public void goToParameters(View view) {
