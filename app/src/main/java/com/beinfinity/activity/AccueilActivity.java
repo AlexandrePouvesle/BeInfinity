@@ -67,102 +67,6 @@ public class AccueilActivity extends AppCompatActivity {
     private PinModify mPinModify = new PinModify();
     private ReadKeyOption mReadKeyOption = new ReadKeyOption();
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
-        public void onReceive(Context context, Intent intent) {
-
-            String action = intent.getAction();
-            Toast.makeText(getApplicationContext(), "BroadcastReceiver action : " + action, Toast.LENGTH_LONG).show();
-
-            if (ACTION_USB_PERMISSION.equals(action))
-
-                synchronized (this) {
-
-                    UsbDevice device = intent
-                            .getParcelableExtra(UsbManager.EXTRA_DEVICE);
-
-                    if (intent.getBooleanExtra(
-                            UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-
-                        if (device != null) {
-
-                            // Open reader
-                            Toast.makeText(getApplicationContext(), "open reader", Toast.LENGTH_SHORT);
-                            new OpenTask().execute(device);
-                        }
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "permissions denied", Toast.LENGTH_SHORT);
-                    }
-                }
-            else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-
-                synchronized (this) {
-
-                    UsbDevice device = intent
-                            .getParcelableExtra(UsbManager.EXTRA_DEVICE);
-
-                    if (device != null && device.equals(mReader.getDevice())) {
-                        new CloseTask().execute();
-                    }
-                }
-            }
-        }
-    };
-
-
-    private class OpenTask extends AsyncTask<UsbDevice, Void, Exception> {
-
-        @Override
-        protected Exception doInBackground(UsbDevice... params) {
-
-            Exception result = null;
-
-            try {
-                Toast.makeText(getApplicationContext(), "OPEN", Toast.LENGTH_LONG).show();
-                mReader.open(params[0]);
-
-            } catch (Exception e) {
-
-                result = e;
-            }
-
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Exception result) {
-
-            if (result != null) {
-                Toast.makeText(getApplicationContext(), "Reader name: " + result.toString(), Toast.LENGTH_SHORT).show();
-
-            } else {
-                Toast.makeText(getApplicationContext(), "Reader name: " + mReader.getReaderName(), Toast.LENGTH_SHORT).show();
-                int numSlots = mReader.getNumSlots();
-                Toast.makeText(getApplicationContext(), "Number of slots: " + numSlots, Toast.LENGTH_SHORT).show();
-                // Remove all control codes
-                mFeatures.clear();
-            }
-        }
-    }
-
-
-    private class CloseTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            mReader.close();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-        }
-
-    }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -197,37 +101,6 @@ public class AccueilActivity extends AppCompatActivity {
         this.GetDataFromDb();
 
         this.InitUSB();
-
-        ImageButton i = (ImageButton) findViewById(R.id.imageButton2);
-        i.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                
-                String deviceName = "";
-                for (UsbDevice device : mManager.getDeviceList().values()) {
-                    if (mReader.isSupported(device)) {
-                        deviceName = device.getDeviceName();
-                    }
-                }
-
-                if (deviceName != null) {
-
-                    // For each device
-                    for (UsbDevice device : mManager.getDeviceList().values()) {
-
-                        // If device name is found
-                        if (deviceName.equals(device.getDeviceName())) {
-
-                            // Request permission
-                            mManager.requestPermission(device,
-                                    mPermissionIntent);
-                            break;
-                        }
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -270,9 +143,6 @@ public class AccueilActivity extends AppCompatActivity {
 
         // Close reader
         mReader.close();
-
-        // Unregister receiver
-        unregisterReceiver(mReceiver);
 
         super.onDestroy();
     }
@@ -412,7 +282,6 @@ public class AccueilActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        registerReceiver(mReceiver, filter);
 
         // PIN verification command (ACOS3)
         byte[] pinVerifyData = {(byte) 0x80, 0x20, 0x06, 0x00, 0x08,
