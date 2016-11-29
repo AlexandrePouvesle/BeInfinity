@@ -41,5 +41,6 @@ public class DbContract {
         public static final String COLUMN_NAME_DATE = "date";
         public static final String COLUMN_NAME_HEURE_DEBUT = "debut";
         public static final String COLUMN_NAME_DUREE = "duree";
+        public static final String COLUMN_NAME_DUREE_MINUTE = "dureeMinute";
     }
 }

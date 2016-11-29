@@ -195,6 +195,8 @@ public class MainActivity extends Activity {
 
         progressView = new ProgressView(mAccueilFormView, mProgressView);
 
+        this.GetDataFromDb();
+
         // Get USB manager
         mManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
@@ -240,10 +242,10 @@ public class MainActivity extends Activity {
         registerReceiver(mReceiver, filter);
 
         // Initialize response text view
-        mResponseTextView = (TextView) findViewById(R.id.main_text_view_response);
-        mResponseTextView.setMovementMethod(new ScrollingMovementMethod());
-        mResponseTextView.setMaxLines(MAX_LINES);
-        mResponseTextView.setText("");
+//        mResponseTextView = (TextView) findViewById(R.id.main_text_view_response);
+//        mResponseTextView.setMovementMethod(new ScrollingMovementMethod());
+//        mResponseTextView.setMaxLines(MAX_LINES);
+//        mResponseTextView.setText("");
 
         String deviceName = "";
         for (UsbDevice device : mManager.getDeviceList().values()) {
@@ -273,6 +275,9 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
+    public void checkID(View view) {
+        this.checkID("66625");
+    }
     @Override
     protected void onDestroy() {
 

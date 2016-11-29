@@ -9,17 +9,16 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/fond_base"
+    android:background="@drawable/login_beinfiny"
     tools:context="com.beinfinity.activity.LoginActivity">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/login_title"
+        android:layout_height="388dp"
         android:textAlignment="textEnd"
         android:paddingBottom="80sp"
-        android:paddingTop="15sp"
+        android:paddingTop="300sp"
         android:textSize="@dimen/accueil_text_size" />
 
     <ProgressBar
@@ -42,7 +41,8 @@
 
             <EditText
                 android:id="@+id/login"
-                android:layout_width="match_parent"
+                android:layout_width="500dp"
+                android:layout_marginLeft="390dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_login"
                 android:imeActionId="@+id/login"
@@ -52,7 +52,8 @@
                 android:maxLines="1" />
 
             <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
+                android:layout_width="500dp"
+                android:layout_marginLeft="390dp"
                 android:layout_height="wrap_content">
 
                 <EditText
@@ -70,9 +71,10 @@
 
             <Button
                 android:id="@+id/parameter_sign_in_button"
-                android:layout_width="match_parent"
+                android:layout_width="500dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginLeft="390dp"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 

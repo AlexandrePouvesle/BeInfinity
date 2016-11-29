@@ -27,6 +27,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     DbContract.BookingEntry.COLUMN_NAME_DATE + TEXT_TYPE + COMMA_SEP +
                     DbContract.BookingEntry.COLUMN_NAME_HEURE_DEBUT + " INTEGER " + COMMA_SEP +
                     DbContract.BookingEntry.COLUMN_NAME_DUREE + " INTEGER " + COMMA_SEP +
+                    DbContract.BookingEntry.COLUMN_NAME_DUREE_MINUTE + " INTEGER " + COMMA_SEP +
                     DbContract.BookingEntry.COLUMN_NAME_TERRAIN + TEXT_TYPE + " )";
 
 
@@ -41,7 +42,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "DROP TABLE IF EXISTS " + DbContract.BookingEntry.TABLE_NAME;
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 11;
     public static final String DATABASE_NAME = "BeInfinity.db";
 
     public DbHelper(Context context) {

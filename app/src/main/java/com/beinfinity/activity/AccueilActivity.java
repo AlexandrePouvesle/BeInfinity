@@ -70,7 +70,7 @@ public class AccueilActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_accueil);
+        //setContentView(R.layout.activity_accueil);
 
         this.parameters = new HashMap<>();
         this.shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
@@ -153,7 +153,7 @@ public class AccueilActivity extends AppCompatActivity {
     }
 
     public void checkID(View view) {
-        // this.checkID("1");
+         this.checkID("1");
 
 
         String deviceName = "";

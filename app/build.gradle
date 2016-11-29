@@ -31,5 +31,4 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.1'
     testCompile 'junit:junit:4.12'
     compile files('/Users/rudiromeu/AndroidStudioProjects/BeInfinity/libs/acssmc-1.1.3.jar')
-    compile files('F:/AndroidStudioProjects/BeInfinity/lib/acssmc-1.1.3.jar')
 }

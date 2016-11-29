@@ -44,6 +44,7 @@ public class BookingActivity extends AppCompatActivity {
     private TextView textViewDisplayName;
     private Spinner spinnerTerrain;
     private NumberPicker numberDuree;
+    private NumberPicker numberDuree2;
     private NumberPicker numberMinDebut;
     private NumberPicker numberHeureDebut;
 
@@ -61,6 +62,7 @@ public class BookingActivity extends AppCompatActivity {
         this.textViewDisplayName = (TextView) findViewById(R.id.booking_Display_Name);
         this.spinnerTerrain = (Spinner) findViewById(R.id.booking_spinnerTerrain);
         this.numberDuree = (NumberPicker) findViewById(R.id.numberPickerDuree);
+        this.numberDuree2 = (NumberPicker) findViewById(R.id.numberPickerDuree2);
         this.numberMinDebut = (NumberPicker) findViewById(R.id.numberPickerMinDebut);
         this.numberHeureDebut = (NumberPicker) findViewById(R.id.numberPickerHeureDebut);
 
@@ -69,6 +71,11 @@ public class BookingActivity extends AppCompatActivity {
         this.numberDuree.setMaxValue(4);
         this.numberDuree.setWrapSelectorWheel(true);
         this.numberDuree.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        this.numberDuree2.setMinValue(0);
+        this.numberDuree2.setMaxValue(1);
+        this.numberDuree2.setWrapSelectorWheel(true);
+        this.numberDuree2.setDisplayedValues(new String[]{"0", "30"});
+        this.numberDuree2.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         this.numberHeureDebut.setMinValue(0);
         this.numberHeureDebut.setMaxValue(23);
         this.numberHeureDebut.setWrapSelectorWheel(true);
@@ -97,6 +104,7 @@ public class BookingActivity extends AppCompatActivity {
         int heureDebut = this.numberHeureDebut.getValue();
         int minuteDebut = this.numberMinDebut.getValue() == 1 ? 30 : 0;
         int duree = this.numberDuree.getValue();
+        int dureeMinute = this.numberDuree2.getValue() == 1 ? 30 : 0;
 
         Calendar c = Calendar.getInstance();
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), heureDebut, minuteDebut, 0);
@@ -106,6 +114,7 @@ public class BookingActivity extends AppCompatActivity {
         dto.setTerrain(terrain);
         dto.setHeureDebut(c);
         dto.setDuree(duree);
+        dto.setDureeMinute(dureeMinute);
 
         this.SendBooking(dto);
     }
@@ -209,12 +218,13 @@ public class BookingActivity extends AppCompatActivity {
 
             Calendar dateFin = (Calendar) dto.getHeureDebut().clone();
             dateFin.add(Calendar.HOUR, dto.getDuree());
+            dateFin.add(Calendar.MINUTE, dto.getDureeMinute());
 
             String param = "centre=\"" + dto.getCentre()
                     + "\"&abonne=\"" + idCard
                     + "\"&dateDebut=\"" + dateFormat2.format(dto.getHeureDebut().getTime())
                     + "\"&dateFin=\"" + dateFormat2.format(dateFin.getTime())
-                    + "\"&duree=\"" + dto.getDuree()
+                    + "\"&duree=\"" + (dto.getDuree() + (dto.getDureeMinute() == 30 ? 0.5 : 0 ))
                     + "\"&terrain=\"" + dto.getTerrain() + "\"";
 
             String response = null;
@@ -244,6 +254,7 @@ public class BookingActivity extends AppCompatActivity {
                 initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DATE, textViewDateJour.getText().toString());
                 //initialValues.put(DbContract.BookingEntry.COLUMN_NAME_HEURE_DEBUT, c.getTimeInMillis());
                 initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DUREE, numberDuree.getValue());
+                initialValues.put(DbContract.BookingEntry.COLUMN_NAME_DUREE_MINUTE, numberDuree2.getValue());
                 //initialValues.put(DbContract.BookingEntry.COLUMN_NAME_TERRAIN, terrain);
 
                 db.insert(DbContract.BookingEntry.TABLE_NAME, null, initialValues);
