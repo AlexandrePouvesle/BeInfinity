@@ -1,45 +1,70 @@
 package com.beinfinity.activity;
 
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
+import android.graphics.Typeface;
+import android.nfc.FormatException;
 import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
 import android.os.AsyncTask;
-import android.os.Parcelable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.acs.smartcard.Features;
-import com.acs.smartcard.PinModify;
-import com.acs.smartcard.PinVerify;
-import com.acs.smartcard.ReadKeyOption;
-import com.acs.smartcard.Reader;
 import com.beinfinity.R;
-
 import com.beinfinity.database.DbContract;
 import com.beinfinity.database.DbHelper;
 import com.beinfinity.tools.Http;
 import com.beinfinity.tools.ProgressView;
 
-import java.io.Console;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 
-public class AccueilActivity extends AppCompatActivity {
+import com.skjolberg.nfc.NfcReader;
+import com.skjolberg.nfc.NfcTag;
+import com.skjolberg.nfc.acs.Acr1222LReader;
+import com.skjolberg.nfc.acs.Acr122UReader;
+import com.skjolberg.nfc.acs.Acr1283LReader;
+import com.skjolberg.nfc.acs.AcrFont;
+import com.skjolberg.nfc.acs.AcrPICC;
+import com.skjolberg.nfc.acs.AcrReader;
+//import com.skjolberg.nfc.desfire.DesfireReader;
+//import com.skjolberg.nfc.desfire.VersionInfo;
+//import com.skjolberg.nfc.util.CommandAPDU;
+//import com.skjolberg.nfc.util.ResponseAPDU;
+import com.skjolberg.nfc.util.activity.NfcExternalDetectorActivity;
+
+import org.ndeftools.Message;
+import org.ndeftools.Record;
+import org.ndeftools.UnsupportedRecord;
+
+public class AccueilActivity extends NfcExternalDetectorActivity {
 
     private static final String URL_NAME = "urlname";
+
+    protected Boolean tag = null;
+    protected Boolean reader = null;
+    protected Boolean service = null;
+
+    // pour l'écriture
+    private NdefFormatable ndefFormatable;
+    private Ndef ndef;
 
     private UserAuthTask mAuthTask = null;
     private ProgressView progressView;
@@ -47,28 +72,13 @@ public class AccueilActivity extends AppCompatActivity {
 
     private View mProgressView;
     private View mAccueilFormView;
-
-    private PendingIntent pendingIntent;
-    private NfcAdapter mNfcAdapter;
-    private IntentFilter[] intentFiltersArray;
-    private String[][] techListsArray;
     private String reason;
     private String displayName;
     private HashMap<String, String> parameters;
     private String idCard;
 
-
-    private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
-    private UsbManager mManager;
-    private Reader mReader;
-    private PendingIntent mPermissionIntent;
-    private Features mFeatures = new Features();
-    private PinVerify mPinVerify = new PinVerify();
-    private PinModify mPinModify = new PinModify();
-    private ReadKeyOption mReadKeyOption = new ReadKeyOption();
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_accueil);
 
@@ -76,75 +86,323 @@ public class AccueilActivity extends AppCompatActivity {
         this.shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         // Récupération des éléments de la vue
-        mProgressView = findViewById(R.id.accueil_progress);
-        mAccueilFormView = findViewById(R.id.accueil_form);
+        this.mProgressView = findViewById(R.id.accueil_progress);
+        this.mAccueilFormView = findViewById(R.id.accueil_form);
 
-        progressView = new ProgressView(mAccueilFormView, mProgressView);
-
-//        this.mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-//
-//        this.pendingIntent = PendingIntent.getActivity(
-//                this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-//
-//        IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-//        try {
-//            ndef.addDataType("*/*");
-//        } catch (IntentFilter.MalformedMimeTypeException e) {
-//            throw new RuntimeException("fail", e);
-//        }
-//
-//        this.intentFiltersArray = new IntentFilter[]{ndef,};
-//        this.techListsArray = new String[][]{new String[]{
-//                MifareClassic.class.getName()
-//        }};
+        this.progressView = new ProgressView(mAccueilFormView, mProgressView);
 
         this.GetDataFromDb();
 
-        this.InitUSB();
+        setDetecting(true);
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        Toast.makeText(getApplicationContext(), "Intent action : " + intent.getAction(), Toast.LENGTH_LONG).show();
-        super.onNewIntent(intent);
-
-//        if (intent != null && NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
-//            Parcelable[] rawMessages =
-//                    intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-//            if (rawMessages != null) {
-//                NdefMessage[] messages = new NdefMessage[rawMessages.length];
-//                for (int i = 0; i < rawMessages.length; i++) {
-//                    messages[i] = (NdefMessage) rawMessages[i];
-//                }
-//
-//                if (messages.length > 0) {
-//                    // TODO: Faire vérification  suppl si nécessaire
-//                    String message = new String(messages[0].getRecords()[0].getPayload());
-//                    this.checkID(message);
-//                }
-//            }
-//        }
+    public void onResume() {
+        super.onResume();
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        this.mNfcAdapter.enableForegroundDispatch(this, this.pendingIntent, this.intentFiltersArray, this.techListsArray);
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        this.mNfcAdapter.disableForegroundDispatch(this);
-//    }
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
     @Override
-    protected void onDestroy() {
+    protected void onNfcStateEnabled() {
+        toast("Native NFC available and enabled.");
+    }
 
-        // Close reader
-        mReader.close();
+    @Override
+    protected void onNfcStateDisabled() {
+        toast("Native NFC available and disabled.");
+    }
 
-        super.onDestroy();
+    @Override
+    protected void onNfcStateChange(boolean enabled) {
+        if (enabled) {
+            toast("Native NFC available and enabled.");
+        } else {
+            toast("Native NFC available and disabled.");
+        }
+    }
+
+    @Override
+    protected void onNfcIntentDetected(Intent intent, String action) {
+        this.tag = true;
+
+        if (intent.hasExtra(NfcAdapter.EXTRA_ID)) {
+            byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
+        }
+
+        if (intent.hasExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)) {
+
+            Parcelable[] messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            if (messages != null) {
+
+                NdefMessage[] ndefMessages = new NdefMessage[messages.length];
+                for (int i = 0; i < messages.length; i++) {
+                    ndefMessages[i] = (NdefMessage) messages[i];
+                }
+
+                // read as much as possible
+                Message message = new Message();
+                for (int i = 0; i < messages.length; i++) {
+                    NdefMessage ndefMessage = (NdefMessage) messages[i];
+
+                    for (NdefRecord ndefRecord : ndefMessage.getRecords()) {
+
+                        Record record;
+                        try {
+                            record = Record.parse(ndefRecord);
+
+                        } catch (FormatException e) {
+                            // if the record is unsupported or corrupted, keep as unsupported record
+                            record = UnsupportedRecord.parse(ndefRecord);
+                        }
+
+                        message.add(record);
+                    }
+                }
+                // ICI CONTENU DU TAG
+                // message;
+                toast("Message taille du message : " + message.size());
+                // message.getNdefMessage().getRecords()
+            }
+        } else {
+            // TAG VIDE
+            toast("No NDEF message");
+        }
+
+        if (intent.hasExtra(NfcAdapter.EXTRA_TAG)) {
+
+            Tag tag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+            try {
+                String[] techList = tag.getTechList();
+
+                for (String tech : techList) {
+
+                    if (tech.equals(android.nfc.tech.MifareUltralight.class.getName())) {
+
+                        MifareUltralight mifareUltralight = MifareUltralight.get(tag);
+                        if (mifareUltralight == null) {
+                            throw new IllegalArgumentException("No Mifare Ultralight");
+                        }
+                        try {
+                            mifareUltralight.connect();
+
+                            int offset = 4;
+                            int length;
+
+                            int type = mifareUltralight.getType();
+                            switch (type) {
+                                case MifareUltralight.TYPE_ULTRALIGHT: {
+                                    length = 12;
+
+                                    break;
+                                }
+                                case MifareUltralight.TYPE_ULTRALIGHT_C: {
+                                    length = 36;
+
+                                    break;
+                                }
+                                default:
+                                    throw new IllegalArgumentException("Unknown mifare ultralight tag " + type);
+                            }
+
+                            int readLength = 4;
+
+                            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+                            for (int i = offset; i < offset + length; i += readLength) {
+                                bout.write(mifareUltralight.readPages(i));
+                            }
+
+                            byte[] buffer = bout.toByteArray();
+
+                            StringBuilder builder = new StringBuilder();
+                            for (int k = 0; k < buffer.length; k += readLength) {
+                                builder.append((offset + k) + " " + toHexString(buffer, k, readLength));
+                                builder.append('\n');
+                            }
+
+                            // CONTENU DE MESSAGE EN PLUS
+                            toast("MIFARE : " + builder.toString());
+
+                            mifareUltralight.close();
+                        } catch (Exception e) {
+
+                        }
+                    } else if (tech.equals(android.nfc.tech.NfcA.class.getName())) {
+                    } else if (tech.equals(android.nfc.tech.NfcB.class.getName())) {
+                    } else if (tech.equals(android.nfc.tech.NfcF.class.getName())) {
+                    } else if (tech.equals(android.nfc.tech.NfcV.class.getName())) {
+                    } else if (tech.equals(android.nfc.tech.IsoDep.class.getName())) {
+                        android.nfc.tech.IsoDep isoDep = IsoDep.get(tag);
+
+                        boolean hostCardEmulation = intent.getBooleanExtra(NfcTag.EXTRA_HOST_CARD_EMULATION, false);
+
+                        /*if (hostCardEmulation) {
+
+
+                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+                            boolean autoSelectIsoApplication = prefs.getBoolean(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_AUTO_SELECT_ISO_APPLICATION, true);
+
+                            if (autoSelectIsoApplication) {
+                                isoDep.connect();
+
+                                // attempt to select demo HCE application using iso adpu
+                                String isoApplicationString = prefs.getString(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_ISO_APPLICATION_ID, null);
+
+                                // clean whitespace
+                                isoApplicationString = isoApplicationString.replaceAll("\\s", "");
+
+                                try {
+                                    byte[] key = hexStringToByteArray(isoApplicationString);
+
+                                    // send ISO select application.
+                                    // All commands starting with 0x00 are passed through without ADPU wrapping for HCE
+                                    CommandAPDU command = new CommandAPDU(0x00, 0xA4, 0x04, 00, key);
+
+                                    Log.d(TAG, "Send request " + toHexString(command.getBytes()));
+
+                                    byte[] responseBytes = isoDep.transceive(command.getBytes());
+
+                                    Log.d(TAG, "Got response " + toHexString(responseBytes));
+
+                                    ResponseAPDU response = new ResponseAPDU(responseBytes);
+
+                                    if (response.getSW1() == 0x91 && response.getSW2() == 0x00) {
+                                        Log.d(TAG, "Selected HCE application " + isoApplicationString);
+
+                                        // issue command which now should be routed to the same HCE client
+                                        // pretend to select application of desfire card
+
+                                        DesfireReader reader = new DesfireReader(isoDep);
+                                        reader.selectApplication(0x00112233);
+
+                                        Log.d(TAG, "Selected application using desfire select application command");
+                                    } else if (response.getSW1() == 0x82 && response.getSW2() == 0x6A) {
+                                        Log.d(TAG, "HCE application " + isoApplicationString + " not found on remote device");
+                                    } else {
+                                        Log.d(TAG, "Unknown error selecting HCE application " + isoApplicationString);
+                                    }
+                                } catch (Exception e) {
+                                    Log.w(TAG, "Unable to decode HEX string " + isoApplicationString + " into binary data", e);
+                                }
+                                isoDep.close();
+
+                            }
+
+
+                        } else {
+                            isoDep.connect();
+
+                            DesfireReader reader = new DesfireReader(isoDep);
+
+                            VersionInfo versionInfo = reader.getVersionInfo();
+
+                            Log.d(TAG, "Got version info - hardware version " + versionInfo.getHardwareVersion() + " / software version " + versionInfo.getSoftwareVersion());
+
+                            isoDep.close();
+                        }*/
+
+                    } else if (tech.equals(android.nfc.tech.MifareClassic.class.getName())) {
+                        android.nfc.tech.MifareClassic mifareClassic = MifareClassic.get(tag);
+
+                    } else if (tech.equals(android.nfc.tech.Ndef.class.getName())) {
+                        this.ndef = Ndef.get(tag);
+
+                    } else if (tech.equals(android.nfc.tech.NdefFormatable.class.getName())) {
+                        this.ndefFormatable = NdefFormatable.get(tag);
+                    }
+                }
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    @Override
+    protected void onNfcFeatureNotFound() {
+        toast("Native NFC is not available");
+    }
+
+    @Override
+    protected void onNfcTagLost(Intent intent) {
+        this.tag = false;
+    }
+
+    @Override
+    protected void onExternalNfcServiceStopped(Intent intent) {
+        this.service = false;
+    }
+
+    @Override
+    protected void onExternalNfcServiceStarted(Intent intent) {
+        this.service = true;
+    }
+
+    @Override
+    protected void onExternalNfcReaderOpened(Intent intent) {
+        this.reader = true;
+
+        if (intent.hasExtra(NfcReader.EXTRA_READER_CONTROL)) {
+            AcrReader reader = intent.getParcelableExtra(NfcReader.EXTRA_READER_CONTROL);
+
+            if (reader instanceof Acr122UReader) {
+                Acr122UReader acr122uReader = (Acr122UReader) reader;
+                acr122uReader.setBuzzerForCardDetection(true);
+
+                acr122uReader.setPICC(
+                        AcrPICC.AUTO_PICC_POLLING,
+                        AcrPICC.POLL_ISO14443_TYPE_B,
+                        AcrPICC.POLL_ISO14443_TYPE_A,
+                        AcrPICC.AUTO_ATS_GENERATION
+                );
+
+                //acr122uReader.setPICC(AcrPICC.AUTO_PICC_POLLING, AcrPICC.POLL_ISO14443_TYPE_B, AcrPICC.POLL_ISO14443_TYPE_A);
+            } /*else if(reader instanceof Acr1222LReader) {
+                Acr1222LReader acr1222lReader = (Acr1222LReader)reader;
+
+                // display font example - note that also font type C
+                acr1222lReader.lightDisplayBacklight(true);
+                acr1222lReader.clearDisplay();
+                acr1222lReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1222L!");
+                acr1222lReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
+            } else if(reader instanceof Acr1283LReader) {
+                Acr1283LReader acr1283LReader = (Acr1283LReader)reader;
+
+                // display font example - note that also font type C
+                acr1283LReader.lightDisplayBacklight(true);
+                acr1283LReader.clearDisplay();
+                acr1283LReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1283L!");
+                acr1283LReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
+            }*/
+        }
+    }
+
+    @Override
+    protected void onExternalNfcReaderClosed(Intent intent) {
+        this.reader = false;
+    }
+
+    @Override
+    protected void onExternalNfcTagLost(Intent intent) {
+        this.ndef = null;
+        this.ndefFormatable = null;
+        this.tag = false;
+    }
+
+    @Override
+    protected void onExternalNfcIntentDetected(Intent intent, String action) {
+        // default to same as native NFC
+        onNfcIntentDetected(intent, action);
+    }
+
+    public void toast(String message) {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL, 0, 0);
+        toast.show();
     }
 
     public void goToParameters(View view) {
@@ -153,35 +411,11 @@ public class AccueilActivity extends AppCompatActivity {
     }
 
     public void checkID(View view) {
-         this.checkID("1");
-
-
-        String deviceName = "";
-        for (UsbDevice device : mManager.getDeviceList().values()) {
-            if (mReader.isSupported(device)) {
-                deviceName = device.getDeviceName();
-            }
-        }
-
-        if (deviceName != null) {
-
-            // For each device
-            for (UsbDevice device : mManager.getDeviceList().values()) {
-
-                // If device name is found
-                if (deviceName.equals(device.getDeviceName())) {
-
-                    // Request permission
-                    mManager.requestPermission(device,
-                            mPermissionIntent);
-                    break;
-                }
-            }
-        }
+        this.checkID("1");
     }
 
     private void checkID(String id) {
-        progressView.ShowProgress(true, shortAnimTime);
+        this.progressView.ShowProgress(true, shortAnimTime);
         mAuthTask = new UserAuthTask(id);
         mAuthTask.execute((Void) null);
     }
@@ -234,108 +468,6 @@ public class AccueilActivity extends AppCompatActivity {
             this.reason = response;
             return false;
         }
-    }
-
-    private void InitUSB() {
-
-        // Get USB manager
-        mManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-
-        // Initialize reader
-        mReader = new Reader(mManager);
-        mReader.setOnStateChangeListener(new Reader.OnStateChangeListener() {
-
-            @Override
-            public void onStateChange(int slotNum, int prevState, int currState) {
-
-                if (prevState < Reader.CARD_UNKNOWN
-                        || prevState > Reader.CARD_SPECIFIC) {
-                    prevState = Reader.CARD_UNKNOWN;
-                }
-
-                if (currState < Reader.CARD_UNKNOWN
-                        || currState > Reader.CARD_SPECIFIC) {
-                    currState = Reader.CARD_UNKNOWN;
-                }
-                Toast.makeText(getApplicationContext(), "State - pre: " + prevState + " curr: " + currState, Toast.LENGTH_LONG).show();
-
-                // Create output string
-                //final String outputString = "Slot " + slotNum + ": "
-                //       + stateStrings[prevState] + " -> "
-                //       + stateStrings[currState];
-
-                // Show output
-                runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        //logMsg(outputString);
-                        Toast.makeText(getApplicationContext(), "RUN THREAD", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        });
-
-        // Register receiver for USB permission
-        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(
-                ACTION_USB_PERMISSION), 0);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_USB_PERMISSION);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-
-        // PIN verification command (ACOS3)
-        byte[] pinVerifyData = {(byte) 0x80, 0x20, 0x06, 0x00, 0x08,
-                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-
-        // Initialize PIN verify structure (ACOS3)
-        mPinVerify.setTimeOut(0);
-        mPinVerify.setTimeOut2(0);
-        mPinVerify.setFormatString(0);
-        mPinVerify.setPinBlockString(0x08);
-        mPinVerify.setPinLengthFormat(0);
-        mPinVerify.setPinMaxExtraDigit(0x0408);
-        mPinVerify.setEntryValidationCondition(0x03);
-        mPinVerify.setNumberMessage(0x01);
-        mPinVerify.setLangId(0x0409);
-        mPinVerify.setMsgIndex(0);
-        mPinVerify.setTeoPrologue(0, 0);
-        mPinVerify.setTeoPrologue(1, 0);
-        mPinVerify.setTeoPrologue(2, 0);
-        mPinVerify.setData(pinVerifyData, pinVerifyData.length);
-
-        // PIN modification command (ACOS3)
-        byte[] pinModifyData = {(byte) 0x80, 0x24, 0x00, 0x00, 0x08,
-                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-
-        // Initialize PIN modify structure (ACOS3)
-        mPinModify.setTimeOut(0);
-        mPinModify.setTimeOut2(0);
-        mPinModify.setFormatString(0);
-        mPinModify.setPinBlockString(0x08);
-        mPinModify.setPinLengthFormat(0);
-        mPinModify.setInsertionOffsetOld(0);
-        mPinModify.setInsertionOffsetNew(0);
-        mPinModify.setPinMaxExtraDigit(0x0408);
-        mPinModify.setConfirmPin(0x01);
-        mPinModify.setEntryValidationCondition(0x03);
-        mPinModify.setNumberMessage(0x02);
-        mPinModify.setLangId(0x0409);
-        mPinModify.setMsgIndex1(0);
-        mPinModify.setMsgIndex2(0x01);
-        mPinModify.setMsgIndex3(0);
-        mPinModify.setTeoPrologue(0, 0);
-        mPinModify.setTeoPrologue(1, 0);
-        mPinModify.setTeoPrologue(2, 0);
-        mPinModify.setData(pinModifyData, pinModifyData.length);
-
-        // Initialize read key option
-        mReadKeyOption.setTimeOut(0);
-        mReadKeyOption.setPinMaxExtraDigit(0x0408);
-        mReadKeyOption.setKeyReturnCondition(0x01);
-        mReadKeyOption.setEchoLcdStartPosition(0);
-        mReadKeyOption.setEchoLcdMode(0x01);
     }
 
     public class UserAuthTask extends AsyncTask<Void, Void, Boolean> {
