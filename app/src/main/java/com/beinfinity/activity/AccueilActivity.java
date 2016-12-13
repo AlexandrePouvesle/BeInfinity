@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.skjolberg.nfc.NfcReader;
+import com.skjolberg.nfc.NfcService;
 import com.skjolberg.nfc.NfcTag;
 import com.skjolberg.nfc.acs.Acr1222LReader;
 import com.skjolberg.nfc.acs.Acr122UReader;
@@ -80,7 +81,7 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_accueil);
+        setContentView(R.layout.activity_accueil);
 
         this.parameters = new HashMap<>();
         this.shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
@@ -92,6 +93,8 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
         this.progressView = new ProgressView(mAccueilFormView, mProgressView);
 
         this.GetDataFromDb();
+
+        initializeExternalNfc();
 
         setDetecting(true);
     }
@@ -128,11 +131,13 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
     @Override
     protected void onNfcIntentDetected(Intent intent, String action) {
         this.tag = true;
-
+        toast("NfcIntentDetected.");
         if (intent.hasExtra(NfcAdapter.EXTRA_ID)) {
             byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
+            this.checkID(toHexString(id));
+            toast("ID : " + toHexString(id));
         }
-
+/*
         if (intent.hasExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)) {
 
             Parcelable[] messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
@@ -165,14 +170,25 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
                 // ICI CONTENU DU TAG
                 // message;
                 toast("Message taille du message : " + message.size());
+                for (int i = 0; i < message.getNdefMessage().getRecords().length; i++) {
+                    toast("Contenu message : " + new String(message.getNdefMessage().getRecords()[i].getPayload()));
+
+                }
                 // message.getNdefMessage().getRecords()
             }
-        } else {
+        }
+
+        else
+
+        {
             // TAG VIDE
             toast("No NDEF message");
         }
 
-        if (intent.hasExtra(NfcAdapter.EXTRA_TAG)) {
+        if(intent.hasExtra(NfcAdapter.EXTRA_TAG))
+
+        {
+            toast("Extra tag");
 
             Tag tag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
@@ -182,6 +198,7 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
                 for (String tech : techList) {
 
                     if (tech.equals(android.nfc.tech.MifareUltralight.class.getName())) {
+                        toast("Mifare ultra light");
 
                         MifareUltralight mifareUltralight = MifareUltralight.get(tag);
                         if (mifareUltralight == null) {
@@ -233,93 +250,108 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
 
                         }
                     } else if (tech.equals(android.nfc.tech.NfcA.class.getName())) {
+                        toast("NfcA");
                     } else if (tech.equals(android.nfc.tech.NfcB.class.getName())) {
+                        toast("NfcB");
                     } else if (tech.equals(android.nfc.tech.NfcF.class.getName())) {
+                        toast("NfcF");
                     } else if (tech.equals(android.nfc.tech.NfcV.class.getName())) {
+                        toast("NfcV");
                     } else if (tech.equals(android.nfc.tech.IsoDep.class.getName())) {
+                        toast("Isodep");
                         android.nfc.tech.IsoDep isoDep = IsoDep.get(tag);
 
                         boolean hostCardEmulation = intent.getBooleanExtra(NfcTag.EXTRA_HOST_CARD_EMULATION, false);
 
-                        /*if (hostCardEmulation) {
+                            /*if (hostCardEmulation) {
 
 
-                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-                            boolean autoSelectIsoApplication = prefs.getBoolean(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_AUTO_SELECT_ISO_APPLICATION, true);
+                                boolean autoSelectIsoApplication = prefs.getBoolean(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_AUTO_SELECT_ISO_APPLICATION, true);
 
-                            if (autoSelectIsoApplication) {
+                                if (autoSelectIsoApplication) {
+                                    isoDep.connect();
+
+                                    // attempt to select demo HCE application using iso adpu
+                                    String isoApplicationString = prefs.getString(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_ISO_APPLICATION_ID, null);
+
+                                    // clean whitespace
+                                    isoApplicationString = isoApplicationString.replaceAll("\\s", "");
+
+                                    try {
+                                        byte[] key = hexStringToByteArray(isoApplicationString);
+
+                                        // send ISO select application.
+                                        // All commands starting with 0x00 are passed through without ADPU wrapping for HCE
+                                        CommandAPDU command = new CommandAPDU(0x00, 0xA4, 0x04, 00, key);
+
+                                        Log.d(TAG, "Send request " + toHexString(command.getBytes()));
+
+                                        byte[] responseBytes = isoDep.transceive(command.getBytes());
+
+                                        Log.d(TAG, "Got response " + toHexString(responseBytes));
+
+                                        ResponseAPDU response = new ResponseAPDU(responseBytes);
+
+                                        if (response.getSW1() == 0x91 && response.getSW2() == 0x00) {
+                                            Log.d(TAG, "Selected HCE application " + isoApplicationString);
+
+                                            // issue command which now should be routed to the same HCE client
+                                            // pretend to select application of desfire card
+
+                                            DesfireReader reader = new DesfireReader(isoDep);
+                                            reader.selectApplication(0x00112233);
+
+                                            Log.d(TAG, "Selected application using desfire select application command");
+                                        } else if (response.getSW1() == 0x82 && response.getSW2() == 0x6A) {
+                                            Log.d(TAG, "HCE application " + isoApplicationString + " not found on remote device");
+                                        } else {
+                                            Log.d(TAG, "Unknown error selecting HCE application " + isoApplicationString);
+                                        }
+                                    } catch (Exception e) {
+                                        Log.w(TAG, "Unable to decode HEX string " + isoApplicationString + " into binary data", e);
+                                    }
+                                    isoDep.close();
+
+                                }
+
+
+                            } else {
                                 isoDep.connect();
 
-                                // attempt to select demo HCE application using iso adpu
-                                String isoApplicationString = prefs.getString(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_ISO_APPLICATION_ID, null);
+                                DesfireReader reader = new DesfireReader(isoDep);
 
-                                // clean whitespace
-                                isoApplicationString = isoApplicationString.replaceAll("\\s", "");
+                                VersionInfo versionInfo = reader.getVersionInfo();
 
-                                try {
-                                    byte[] key = hexStringToByteArray(isoApplicationString);
+                                Log.d(TAG, "Got version info - hardware version " + versionInfo.getHardwareVersion() + " / software version " + versionInfo.getSoftwareVersion());
 
-                                    // send ISO select application.
-                                    // All commands starting with 0x00 are passed through without ADPU wrapping for HCE
-                                    CommandAPDU command = new CommandAPDU(0x00, 0xA4, 0x04, 00, key);
-
-                                    Log.d(TAG, "Send request " + toHexString(command.getBytes()));
-
-                                    byte[] responseBytes = isoDep.transceive(command.getBytes());
-
-                                    Log.d(TAG, "Got response " + toHexString(responseBytes));
-
-                                    ResponseAPDU response = new ResponseAPDU(responseBytes);
-
-                                    if (response.getSW1() == 0x91 && response.getSW2() == 0x00) {
-                                        Log.d(TAG, "Selected HCE application " + isoApplicationString);
-
-                                        // issue command which now should be routed to the same HCE client
-                                        // pretend to select application of desfire card
-
-                                        DesfireReader reader = new DesfireReader(isoDep);
-                                        reader.selectApplication(0x00112233);
-
-                                        Log.d(TAG, "Selected application using desfire select application command");
-                                    } else if (response.getSW1() == 0x82 && response.getSW2() == 0x6A) {
-                                        Log.d(TAG, "HCE application " + isoApplicationString + " not found on remote device");
-                                    } else {
-                                        Log.d(TAG, "Unknown error selecting HCE application " + isoApplicationString);
-                                    }
-                                } catch (Exception e) {
-                                    Log.w(TAG, "Unable to decode HEX string " + isoApplicationString + " into binary data", e);
-                                }
                                 isoDep.close();
-
                             }
 
-
-                        } else {
-                            isoDep.connect();
-
-                            DesfireReader reader = new DesfireReader(isoDep);
-
-                            VersionInfo versionInfo = reader.getVersionInfo();
-
-                            Log.d(TAG, "Got version info - hardware version " + versionInfo.getHardwareVersion() + " / software version " + versionInfo.getSoftwareVersion());
-
-                            isoDep.close();
-                        }*/
-
                     } else if (tech.equals(android.nfc.tech.MifareClassic.class.getName())) {
+                        toast("Mifare classic");
                         android.nfc.tech.MifareClassic mifareClassic = MifareClassic.get(tag);
 
+                        mifareClassic.connect();
+                        if (mifareClassic.isConnected()) {
+                            toast("CONNECTED");
+                            new ReadTagTask().execute(mifareClassic);
+                        }
+
                     } else if (tech.equals(android.nfc.tech.Ndef.class.getName())) {
+                        toast("NDEF");
                         this.ndef = Ndef.get(tag);
 
                     } else if (tech.equals(android.nfc.tech.NdefFormatable.class.getName())) {
+                        toast("NDEFFORMAT");
                         this.ndefFormatable = NdefFormatable.get(tag);
                     }
                 }
             } catch (Exception e) {
+                toast("ExCEPTION"+e.getMessage());
             }
-        }
+        }*/
     }
 
     @Override
@@ -399,10 +431,15 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
         onNfcIntentDetected(intent, action);
     }
 
+    protected void initializeExternalNfc() {
+        broadcast(NfcService.ACTION_SERVICE_STATUS);
+        broadcast(NfcReader.ACTION_READER_STATUS);
+    }
+
     public void toast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL, 0, 0);
-        toast.show();
+        //toast.show();
     }
 
     public void goToParameters(View view) {
@@ -411,7 +448,7 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
     }
 
     public void checkID(View view) {
-        this.checkID("1");
+        this.checkID("04935CFACD4080");
     }
 
     private void checkID(String id) {
@@ -455,14 +492,15 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
         String url = this.parameters.get(URL_NAME);
         String response = null;
         try {
-            this.idCard = idCard.substring(3);
+            this.idCard = idCard;
             response = Http.SendGetRequest(url + "login.php?id=" + this.idCard);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         if (!response.contains("expired") && !response.contains("unregistered")) {
-            this.displayName = response;
+            this.displayName = response.split(";")[1];
+            this.idCard = response.split(";")[0];
             return true;
         } else {
             this.reason = response;
@@ -514,4 +552,5 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
             progressView.ShowProgress(false, shortAnimTime);
         }
     }
+
 }

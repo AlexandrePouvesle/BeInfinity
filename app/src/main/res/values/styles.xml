@@ -6,6 +6,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:spinnerItemStyle">
+            @style/spinnerItemStyle
+        </item>
     </style>
 
+    <style name="spinnerItemStyle">
+        <item name="android:textSize">40sp</item>
+    </style>
 </resources>

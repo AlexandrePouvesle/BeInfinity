@@ -67,14 +67,14 @@ public class BookingActivity extends AppCompatActivity {
         this.numberHeureDebut = (NumberPicker) findViewById(R.id.numberPickerHeureDebut);
 
         // Initialisation des variables
-        this.numberDuree.setMinValue(0);
-        this.numberDuree.setMaxValue(4);
+        this.numberDuree.setMinValue(1);
+        this.numberDuree.setMaxValue(10);
         this.numberDuree.setWrapSelectorWheel(true);
         this.numberDuree.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         this.numberDuree2.setMinValue(0);
         this.numberDuree2.setMaxValue(1);
         this.numberDuree2.setWrapSelectorWheel(true);
-        this.numberDuree2.setDisplayedValues(new String[]{"0", "30"});
+        this.numberDuree2.setDisplayedValues(new String[]{"00", "30"});
         this.numberDuree2.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         this.numberHeureDebut.setMinValue(0);
         this.numberHeureDebut.setMaxValue(23);
@@ -83,7 +83,7 @@ public class BookingActivity extends AppCompatActivity {
         this.numberMinDebut.setMinValue(0);
         this.numberMinDebut.setMaxValue(1);
         this.numberMinDebut.setWrapSelectorWheel(true);
-        this.numberMinDebut.setDisplayedValues(new String[]{"0", "30"});
+        this.numberMinDebut.setDisplayedValues(new String[]{"00", "30"});
         this.numberMinDebut.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         this.terrains = new ArrayList<>();
         this.parameters = new HashMap<>();
@@ -94,7 +94,7 @@ public class BookingActivity extends AppCompatActivity {
 
         // Récupération du nom de l'utilisateur
         Intent myIntent = getIntent();
-        this.abonne = myIntent.getStringExtra(getString(R.string.displayName));
+        this.abonne = "Bonjour, " + myIntent.getStringExtra(getString(R.string.displayName));
         this.idCard = myIntent.getStringExtra(getString(R.string.idCard));
         this.textViewDisplayName.setText(this.abonne);
     }

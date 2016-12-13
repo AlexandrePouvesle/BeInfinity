@@ -17,8 +17,9 @@
             android:id="@+id/booking_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
+            android:textAlignment="textStart"
             android:textSize="@dimen/accueil_text_size"
+            android:layout_marginTop="20dp"
             android:layout_marginLeft="200dp"/>
 
         <TextView
@@ -26,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:layout_marginTop="80dp"
             android:textSize="@dimen/accueil_text_size" />
 
         <TextView
@@ -34,19 +35,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="90dp"
+            android:layout_marginTop="60dp"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
             android:textSize="@dimen/accueil_text_size" />
 
         <Button
             android:id="@+id/buttonAnnuler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:onClick="Annuler"
             android:text="@string/booking_annuler"
+            android:textSize="@dimen/labelHigh"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
-            android:layout_marginTop="165dp" />
+            android:layout_marginTop="35dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -65,55 +67,67 @@
             <NumberPicker
                 android:id="@+id/numberPickerHeureDebut"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_marginStart="130sp"
-                android:layout_marginTop="80sp"
+                android:layout_height="wrap_content"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:layout_marginStart="80sp"
+                android:layout_marginTop="110sp"
                 android:theme="@android:style/Theme.Dialog" />
 
             <NumberPicker
                 android:id="@+id/numberPickerMinDebut"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_marginStart="5sp"
-                android:layout_marginTop="80sp"
+                android:layout_height="wrap_content"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:layout_marginStart="40sp"
+                android:layout_marginTop="110sp"
                 android:theme="@android:style/Theme.Dialog" />
 
             <NumberPicker
                 android:id="@+id/numberPickerDuree"
                 android:layout_width="wrap_content"
-                android:layout_height="147dp"
-                android:layout_marginStart="70sp"
-                android:layout_marginTop="80sp"
+                android:layout_height="wrap_content"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:layout_marginStart="110sp"
+                android:layout_marginTop="110sp"
                 android:theme="@android:style/Theme.Dialog" />
 
 
             <NumberPicker
                 android:id="@+id/numberPickerDuree2"
                 android:layout_width="wrap_content"
-                android:layout_height="147dp"
-                android:layout_marginStart="5sp"
-                android:layout_marginTop="80sp"
+                android:layout_height="wrap_content"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:layout_marginStart="40sp"
+                android:layout_marginTop="110sp"
                 android:theme="@android:style/Theme.Dialog" />
         </LinearLayout>
 
         <Spinner
             android:id="@+id/booking_spinnerTerrain"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="28dp"
             android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="200sp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="250sp"
+            android:scaleX="1.3"
+            android:scaleY="1.3"
             android:background="@android:color/white"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/label" />
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/buttonValider"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:onClick="Valider"
             android:text="@string/booking_valider"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="50dp"
+            android:backgroundTint="@color/colorBlue"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/labelHigh"
+            android:layout_marginTop="46dp"
+            android:layout_marginLeft="60dp"
             android:layout_marginRight="50dp"/>
     </LinearLayout>
 </LinearLayout>

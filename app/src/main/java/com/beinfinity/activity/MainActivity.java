@@ -19,6 +19,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
+import android.nfc.tech.MifareClassic;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -27,6 +28,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.acs.smartcard.ReaderException;
 import com.beinfinity.R;
 
 import com.acs.smartcard.Features;
@@ -56,6 +58,11 @@ public class MainActivity extends Activity {
     private UserAuthTask mAuthTask = null;
     private ProgressView progressView;
     private int shortAnimTime;
+
+    private PendingIntent pendingIntent;
+    private IntentFilter[] intentFiltersArray;
+    private String[][] techListsArray;
+    ;
 
     private View mProgressView;
     private View mAccueilFormView;
@@ -151,11 +158,12 @@ public class MainActivity extends Activity {
                 logMsg(result.toString());
 
             } else {
-
                 logMsg("Reader name: " + mReader.getReaderName());
 
                 int numSlots = mReader.getNumSlots();
                 logMsg("Number of slots: " + numSlots);
+
+
                 // Remove all control codes
                 mFeatures.clear();
             }
@@ -192,6 +200,8 @@ public class MainActivity extends Activity {
         // Récupération des éléments de la vue
         mProgressView = findViewById(R.id.accueil_progress);
         mAccueilFormView = findViewById(R.id.accueil_form);
+        mResponseTextView = (TextView) findViewById(R.id.main_text_view_response);
+
 
         progressView = new ProgressView(mAccueilFormView, mProgressView);
 
@@ -222,11 +232,16 @@ public class MainActivity extends Activity {
                         + stateStrings[prevState] + " -> "
                         + stateStrings[currState];
 
+                // Set parameters
+                new PowerTask().execute();
+
                 // Show output
                 runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
+                        logMsg("attrb : " + mReader.getAtr(0));
+                        logMsg("state : " + mReader.getState(0));
                         logMsg(outputString);
                     }
                 });
@@ -278,6 +293,171 @@ public class MainActivity extends Activity {
     public void checkID(View view) {
         this.checkID("66625");
     }
+
+    private class PowerResult {
+
+        public byte[] atr;
+        public Exception e;
+        public String result;
+    }
+
+    private class PowerTask extends AsyncTask<Void, Void, PowerResult> {
+
+        @Override
+        protected PowerResult doInBackground(Void... params) {
+
+
+            PowerResult result = new PowerResult();
+            try {
+
+                logMsg("state before power :" + mReader.getState(0));
+                result.atr = mReader.power(0, 2);
+
+            } catch (Exception e) {
+                result.e = e;
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(PowerResult result) {
+
+            if (result.e != null) {
+
+                logMsg(result.e.toString());
+
+            } else {
+
+                // Show ATR
+                if (result.atr != null) {
+                    logMsg("state after power :" + mReader.getState(0));
+                    logMsg("Power set");
+                    new SetProtocolTask().execute();
+
+                } else {
+
+                    logMsg("ATR: None");
+                }
+            }
+        }
+    }
+
+
+    private class SetProtocolResult {
+
+        public int activeProtocol;
+        public Exception e;
+    }
+
+    private class SetProtocolTask extends
+            AsyncTask<Void, Void, SetProtocolResult> {
+
+        @Override
+        protected SetProtocolResult doInBackground(Void... params) {
+
+            SetProtocolResult result = new SetProtocolResult();
+
+            try {
+
+                result.activeProtocol = mReader.setProtocol(0,
+                        Reader.PROTOCOL_T0 | Reader.PROTOCOL_T1);
+
+            } catch (Exception e) {
+
+                result.e = e;
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(SetProtocolResult result) {
+
+            if (result.e != null) {
+
+                logMsg(result.e.toString());
+
+            } else {
+
+                String activeProtocolString = "Active Protocol: ";
+
+                switch (result.activeProtocol) {
+
+                    case Reader.PROTOCOL_T0:
+                        activeProtocolString += "T=0";
+                        break;
+
+                    case Reader.PROTOCOL_T1:
+                        activeProtocolString += "T=1";
+                        break;
+
+                    default:
+                        activeProtocolString += "Unknown";
+                        break;
+                }
+
+                // Show active protocol
+                logMsg(activeProtocolString);
+                new Transmit().execute();
+            }
+        }
+    }
+
+    private class Transmit extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            String result = "";
+            byte[] command = {(byte) 0xFF, (byte) 0xCA, (byte) 0x00, (byte) 0x00, (byte) 0x04};
+            byte[] command2 = {(byte) 0xFF, (byte) 0xB0, (byte) 0x00, (byte) 0x10, (byte) 0x10};
+            byte[] response = new byte[10000];
+            byte[] response2 = new byte[1000];
+            int responseLength = 0;
+            try {
+                //responseLength = mReader.transmit(0, command, command.length, response, response.length);
+                //result = "response length : " + responseLength + "response : " + response + "attrb strg : " + new String(response);
+                //responseLength = 0;
+                responseLength = mReader.transmit(0, command2, command2.length, response2, response2.length);
+                result += "response length : " + responseLength + "response2 : " + response2 + "attrb strg : " + new String(response2);
+            } catch (ReaderException e) {
+                // TODO Auto-generated catch block
+                logMsg("exception: " + e);
+            } finally {
+                return result;
+            }
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            logMsg("Transmit result" + result);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        logMsg("On new intent");
+        super.onNewIntent(intent);
+
+//        if (intent != null && NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
+//            Parcelable[] rawMessages =
+//                    intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+//            if (rawMessages != null) {
+//                NdefMessage[] messages = new NdefMessage[rawMessages.length];
+//                for (int i = 0; i < rawMessages.length; i++) {
+//                    messages[i] = (NdefMessage) rawMessages[i];
+//                }
+//
+//                if (messages.length > 0) {
+//                    // TODO: Faire vérification  suppl si nécessaire
+//                    String message = new String(messages[0].getRecords()[0].getPayload());
+//                    this.checkID(message);
+//                }
+//            }
+//        }
+    }
+
     @Override
     protected void onDestroy() {
 
@@ -299,16 +479,16 @@ public class MainActivity extends Activity {
 
         DateFormat dateFormat = new SimpleDateFormat("[dd-MM-yyyy HH:mm:ss]: ");
         Date date = new Date();
-//        String oldMsg = mResponseTextView.getText().toString();
-//
-//        mResponseTextView
-//                .setText(oldMsg + "\n" + dateFormat.format(date) + msg);
-//
-//        if (mResponseTextView.getLineCount() > MAX_LINES) {
-//            mResponseTextView.scrollTo(0,
-//                    (mResponseTextView.getLineCount() - MAX_LINES)
-//                            * mResponseTextView.getLineHeight());
-//        }
+        String oldMsg = mResponseTextView.getText().toString();
+
+        mResponseTextView
+                .setText(oldMsg + "\n" + dateFormat.format(date) + msg);
+
+        if (mResponseTextView.getLineCount() > MAX_LINES) {
+            mResponseTextView.scrollTo(0,
+                    (mResponseTextView.getLineCount() - MAX_LINES)
+                            * mResponseTextView.getLineHeight());
+        }
     }
 
     public void goToParameters(View view) {

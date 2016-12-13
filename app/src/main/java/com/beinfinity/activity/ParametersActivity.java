@@ -30,7 +30,7 @@ public class ParametersActivity extends AppCompatActivity {
     private static final String CENTRE_NAME = "centerName";
     private static final String CENTRE_ID = "centerId";
     private static final String URL_NAME = "urlname";
-    private static final String URL = "http://beinfiny.fr/app/";
+    private static final String URL = "https://beinfiny.fr/app/";
 
     private ListView mListView;
     private EditText edtTxtUrlName;
@@ -66,7 +66,12 @@ public class ParametersActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, AccueilActivity.class);
+        startActivity(intent);
+    }
+
+    public void Back(View view) {
+        Intent intent = new Intent(this, AccueilActivity.class);
         startActivity(intent);
     }
 

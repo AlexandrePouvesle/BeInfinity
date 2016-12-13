@@ -19,11 +19,20 @@
         android:paddingRight="50dp">
 
         <Button
-            android:id="@+id/buttonQuitterApp"
+            android:id="@+id/buttonRetourAccueuil"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="30sp"
-            android:layout_marginTop="685dp"
+            android:layout_marginTop="600dp"
+            android:onClick="Back"
+            android:text="@string/parametre_retour" />
+
+        <Button
+            android:id="@+id/buttonQuitterApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15sp"
+            android:layout_marginTop="20dp"
             android:onClick="LeaveApp"
             android:text="@string/parameters_quitter" />
     </LinearLayout>
@@ -37,14 +46,14 @@
 
         <GridLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="90dp"
             android:layout_marginTop="250dp">
 
             <TextView
                 android:layout_width="283dp"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
-                android:layout_marginBottom="30sp"
+                android:layout_marginBottom="10sp"
                 android:layout_row="0"
                 android:text="@string/parameters_centre"
                 android:textSize="@dimen/label" />
@@ -73,7 +82,8 @@
             android:id="@+id/listViewTerrain"
             android:layout_width="wrap_content"
             android:layout_height="303dp"
-            android:layout_weight="0.43" />
+            android:layout_weight="0.43"
+            android:background="@drawable/rectangle"/>
 
 
         <GridLayout
