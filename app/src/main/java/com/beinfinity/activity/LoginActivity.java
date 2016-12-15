@@ -70,6 +70,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    public void Back(View view) {
+        Intent intent = new Intent(this, AccueilActivity.class);
+        startActivity(intent);
+    }
+
     private void GoToParameter() {
         Intent intent = new Intent(this, ParametersActivity.class);
         startActivity(intent);

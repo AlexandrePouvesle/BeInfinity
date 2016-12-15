@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BeInfinity</string>
+    <string name="app_name">BeInfiny</string>
     <string name="accueil_message">Veuillez passer votre badge</string>
     <string name="title_activity_login">Authentification</string>
 

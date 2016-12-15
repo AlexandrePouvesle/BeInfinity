@@ -78,6 +78,17 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/buttonRetourAccueuil"
+                android:layout_width="500dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="390dp"
+                android:text="@string/parametre_retour"
+                android:onClick="Back"
+                android:textStyle="bold" />
+
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
