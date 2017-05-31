@@ -13,8 +13,8 @@
         android:id="@+id/accueil_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="640sp"
-        android:layout_marginTop="550sp"
+        android:layout_marginLeft="480sp"
+        android:layout_marginTop="440sp"
         android:visibility="gone" />
 
     <RelativeLayout
@@ -28,12 +28,12 @@
             android:id="@+id/acceuil_preference"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="26dp"
-            android:layout_marginTop="224dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginTop="166dp"
             android:background="@mipmap/ic_reglage"
-            android:onClick="goToParameters" />
+            android:onClick="goToParameters"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
 
         <!--<ImageButton-->
         <!--android:id="@+id/acceuil_preference2"-->

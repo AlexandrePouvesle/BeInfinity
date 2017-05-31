@@ -9,10 +9,10 @@
     tools:context="com.beinfinity.activity.BookingActivity">
 
     <LinearLayout
-        android:layout_width="640dp"
+        android:layout_width="530dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="230dp">
+        android:layout_marginTop="150dp">
         <TextView
             android:id="@+id/booking_title"
             android:layout_width="match_parent"
@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="30dp"
             android:textSize="@dimen/accueil_text_size" />
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="90dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="20dp"
             android:textAlignment="center"
             android:textSize="@dimen/accueil_text_size" />
 
@@ -47,19 +47,19 @@
             android:text="@string/booking_annuler"
             android:textSize="@dimen/labelHigh"
             android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:layout_marginTop="35dp" />
+            android:layout_marginRight="100dp"
+            android:layout_marginTop="-20dp" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="640dp"
+        android:layout_width="400dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="250dp">
+        android:layout_marginTop="110dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="280dp"
+            android:layout_height="230dp"
             android:layout_marginTop="20sp"
             android:orientation="horizontal"
             android:weightSum="1">
@@ -68,30 +68,30 @@
                 android:id="@+id/numberPickerHeureDebut"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleX="1.5"
-                android:scaleY="1.5"
-                android:layout_marginStart="80sp"
-                android:layout_marginTop="110sp"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:layout_marginStart="0sp"
+                android:layout_marginTop="90sp"
                 android:theme="@android:style/Theme.Dialog" />
 
             <NumberPicker
                 android:id="@+id/numberPickerMinDebut"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleX="1.5"
-                android:scaleY="1.5"
-                android:layout_marginStart="40sp"
-                android:layout_marginTop="110sp"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:layout_marginStart="10sp"
+                android:layout_marginTop="90sp"
                 android:theme="@android:style/Theme.Dialog" />
 
             <NumberPicker
                 android:id="@+id/numberPickerDuree"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleX="1.5"
-                android:scaleY="1.5"
-                android:layout_marginStart="110sp"
-                android:layout_marginTop="110sp"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:layout_marginStart="50sp"
+                android:layout_marginTop="90sp"
                 android:theme="@android:style/Theme.Dialog" />
 
 
@@ -99,19 +99,19 @@
                 android:id="@+id/numberPickerDuree2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleX="1.5"
-                android:scaleY="1.5"
-                android:layout_marginStart="40sp"
-                android:layout_marginTop="110sp"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:layout_marginStart="10sp"
+                android:layout_marginTop="90sp"
                 android:theme="@android:style/Theme.Dialog" />
         </LinearLayout>
 
         <Spinner
             android:id="@+id/booking_spinnerTerrain"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="70dp"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="250sp"
+            android:layout_marginStart="90sp"
             android:scaleX="1.3"
             android:scaleY="1.3"
             android:background="@android:color/white"
@@ -126,7 +126,7 @@
             android:backgroundTint="@color/colorBlue"
             android:textColor="@android:color/white"
             android:textSize="@dimen/labelHigh"
-            android:layout_marginTop="46dp"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="60dp"
             android:layout_marginRight="50dp"/>
     </LinearLayout>

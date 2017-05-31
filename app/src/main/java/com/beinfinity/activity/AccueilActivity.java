@@ -489,6 +489,7 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
     }
 
     private Boolean checkIDCard(String idCard) {
+        //String url = this.parameters.get(URL_NAME);
         String url = this.parameters.get(URL_NAME);
         String response = null;
         try {
