@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BeInfinity.iml" filepath="$PROJECT_DIR$/BeInfinity.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/externalNFCAPI/externalNFCAPI.iml" filepath="$PROJECT_DIR$/externalNFCAPI/externalNFCAPI.iml" />
     </modules>
   </component>
 </project>

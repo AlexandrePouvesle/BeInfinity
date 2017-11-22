@@ -4,17 +4,22 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +47,7 @@ public class BookingActivity extends AppCompatActivity {
     private TextView textViewTitle;
     private TextView textViewDateJour;
     private TextView textViewDisplayName;
+    private ImageView imageProfil;
     private Spinner spinnerTerrain;
     private NumberPicker numberDuree;
     private NumberPicker numberDuree2;
@@ -50,6 +56,7 @@ public class BookingActivity extends AppCompatActivity {
 
     private String abonne;
     private String idCard;
+    private String urlProfilImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +72,7 @@ public class BookingActivity extends AppCompatActivity {
         this.numberDuree2 = (NumberPicker) findViewById(R.id.numberPickerDuree2);
         this.numberMinDebut = (NumberPicker) findViewById(R.id.numberPickerMinDebut);
         this.numberHeureDebut = (NumberPicker) findViewById(R.id.numberPickerHeureDebut);
+        // this.imageProfil = (ImageView)  findViewById(R.id.booking_image_profil);
 
         // Initialisation des variables
         this.numberDuree.setMinValue(1);
@@ -96,7 +104,11 @@ public class BookingActivity extends AppCompatActivity {
         Intent myIntent = getIntent();
         this.abonne = "Bonjour, " + myIntent.getStringExtra(getString(R.string.displayName));
         this.idCard = myIntent.getStringExtra(getString(R.string.idCard));
+        this.urlProfilImage = myIntent.getStringExtra(getString(R.string.urlImage));
         this.textViewDisplayName.setText(this.abonne);
+
+        new DownloadImageTask((ImageView) findViewById(R.id.booking_image_profil))
+                .execute("https://orig00.deviantart.net/ace1/f/2010/227/4/6/png_test_by_destron23.png");
     }
 
     public void Valider(View view) {
@@ -268,6 +280,30 @@ public class BookingActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), getString(R.string.booking_toast), Toast.LENGTH_SHORT).show();
                 finish();
             }
+        }
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                // e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 }
