@@ -35,7 +35,7 @@
             android:background="@mipmap/ic_reglage"
             android:onClick="goToParameters" />
 
-        <!-- <ImageButton
+       <!-- <ImageButton
         android:id="@+id/acceuil_preference2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,6 +44,6 @@
         android:layout_marginTop="179dp"
         android:layout_toStartOf="@+id/acceuil_preference"
         android:background="@mipmap/ic_reglage"
-        android:onClick="checkID" /> -->
+        android:onClick="checkID" />-->
     </RelativeLayout>
 </RelativeLayout>

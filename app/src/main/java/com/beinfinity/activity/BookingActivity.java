@@ -107,8 +107,10 @@ public class BookingActivity extends AppCompatActivity {
         this.urlProfilImage = myIntent.getStringExtra(getString(R.string.urlImage));
         this.textViewDisplayName.setText(this.abonne);
 
-        new DownloadImageTask((ImageView) findViewById(R.id.booking_image_profil))
-                .execute("https://orig00.deviantart.net/ace1/f/2010/227/4/6/png_test_by_destron23.png");
+        if(this.urlProfilImage != null) {
+            new DownloadImageTask((ImageView) findViewById(R.id.booking_image_profil))
+                    .execute(this.urlProfilImage);
+        }
     }
 
     public void Valider(View view) {
