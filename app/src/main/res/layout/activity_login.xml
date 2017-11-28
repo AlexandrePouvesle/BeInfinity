@@ -14,7 +14,7 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="388dp"
+        android:layout_height="200dp"
         android:textAlignment="textEnd"
         android:paddingBottom="80sp"
         android:paddingTop="300sp"

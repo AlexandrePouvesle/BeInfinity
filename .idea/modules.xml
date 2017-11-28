@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BeInfinity.iml" filepath="$PROJECT_DIR$/BeInfinity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Beinfiny_8.iml" filepath="$PROJECT_DIR$/Beinfiny_8.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/externalNFCAPI/externalNFCAPI.iml" filepath="$PROJECT_DIR$/externalNFCAPI/externalNFCAPI.iml" />
     </modules>
