@@ -77,6 +77,7 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
     private String displayName;
     private HashMap<String, String> parameters;
     private String idCard;
+    private String urlImage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -448,7 +449,7 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
     }
 
     public void checkID(View view) {
-        this.checkID("04935CFACD4080");
+        this.checkID("04E11A726D4884");
     }
 
     private void checkID(String id) {
@@ -461,6 +462,7 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
         Intent intent = new Intent(this, BookingActivity.class);
         intent.putExtra(getString(R.string.displayName), this.displayName);
         intent.putExtra(getString(R.string.idCard), this.idCard);
+        intent.putExtra(getString(R.string.urlImage), this.urlImage);
         startActivity(intent);
     }
 
@@ -502,6 +504,7 @@ public class AccueilActivity extends NfcExternalDetectorActivity {
         if (!response.contains("expired") && !response.contains("unregistered")) {
             this.displayName = response.split(";")[1];
             this.idCard = response.split(";")[0];
+            this.urlImage = response.split(";")[2];
             return true;
         } else {
             this.reason = response;
