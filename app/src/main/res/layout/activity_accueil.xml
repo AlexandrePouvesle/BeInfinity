@@ -35,7 +35,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true" />
 
-       <!-- <ImageButton
+        <!--<ImageButton
         android:id="@+id/acceuil_preference2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

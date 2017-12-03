@@ -43,6 +43,8 @@
     <string name="booking_echec">Une réservation existe déjà à votre nom.</string>
     <string name="parametre_retour">Retour accueil</string>
     <string name="urlImage">urlImage</string>
+    <string name="noImage">Pas d\'image disponible</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <!--<string name="hello_blank_fragment">Hello blank fragment</string> -->

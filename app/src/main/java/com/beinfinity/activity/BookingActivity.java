@@ -47,7 +47,7 @@ public class BookingActivity extends AppCompatActivity {
     private TextView textViewTitle;
     private TextView textViewDateJour;
     private TextView textViewDisplayName;
-    private ImageView imageProfil;
+    private TextView textViewNoImage;
     private Spinner spinnerTerrain;
     private NumberPicker numberDuree;
     private NumberPicker numberDuree2;
@@ -72,7 +72,8 @@ public class BookingActivity extends AppCompatActivity {
         this.numberDuree2 = (NumberPicker) findViewById(R.id.numberPickerDuree2);
         this.numberMinDebut = (NumberPicker) findViewById(R.id.numberPickerMinDebut);
         this.numberHeureDebut = (NumberPicker) findViewById(R.id.numberPickerHeureDebut);
-        // this.imageProfil = (ImageView)  findViewById(R.id.booking_image_profil);
+        this.textViewNoImage = (TextView) findViewById(R.id.booking_no_image);
+        this.textViewNoImage.setVisibility(View.INVISIBLE);
 
         // Initialisation des variables
         this.numberDuree.setMinValue(1);
@@ -305,7 +306,11 @@ public class BookingActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
+            if(result != null) {
+                bmImage.setImageBitmap(result);
+            } else {
+                textViewNoImage.setVisibility(View.VISIBLE);
+            }
         }
     }
 }
