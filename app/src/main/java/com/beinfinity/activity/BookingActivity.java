@@ -73,7 +73,7 @@ public class BookingActivity extends AppCompatActivity {
         this.numberMinDebut = (NumberPicker) findViewById(R.id.numberPickerMinDebut);
         this.numberHeureDebut = (NumberPicker) findViewById(R.id.numberPickerHeureDebut);
         this.textViewNoImage = (TextView) findViewById(R.id.booking_no_image);
-        this.textViewNoImage.setVisibility(View.INVISIBLE);
+        this.textViewNoImage.setVisibility(View.GONE);
 
         // Initialisation des variables
         this.numberDuree.setMinValue(1);
@@ -309,7 +309,7 @@ public class BookingActivity extends AppCompatActivity {
             if(result != null) {
                 bmImage.setImageBitmap(result);
             } else {
-                textViewNoImage.setVisibility(View.VISIBLE);
+               textViewNoImage.setVisibility(View.VISIBLE);
             }
         }
     }

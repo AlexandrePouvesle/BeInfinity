@@ -12,15 +12,15 @@
     tools:context="com.beinfinity.activity.ParametersActivity">
 
     <LinearLayout
-        android:layout_width="640dp"
+        android:layout_width="561dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="50dp"
+        android:paddingLeft="30dp"
         android:paddingRight="50dp">
 
         <Button
             android:id="@+id/buttonRetourAccueuil"
-            android:layout_width="match_parent"
+            android:layout_width="480dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="30sp"
             android:layout_marginTop="300dp"
@@ -29,7 +29,7 @@
 
         <Button
             android:id="@+id/buttonQuitterApp"
-            android:layout_width="match_parent"
+            android:layout_width="478dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15sp"
             android:layout_marginTop="20dp"
