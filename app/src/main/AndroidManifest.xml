@@ -26,12 +26,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.beinfinity.activity.MainActivity"
+            android:name="com.beinfinity.activity.AccueilActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <!-- NFC <action android:name="android.nfc.action.TAG_DISCOVERED" /> -->
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
 
             </intent-filter>
         </activity>

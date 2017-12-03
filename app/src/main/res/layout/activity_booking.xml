@@ -9,24 +9,29 @@
     tools:context="com.beinfinity.activity.BookingActivity">
 
     <LinearLayout
-        android:layout_width="640dp"
+        android:layout_width="530dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="230dp">
+        android:layout_marginTop="150dp">
         <TextView
             android:id="@+id/booking_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
+            android:textAlignment="textStart"
             android:textSize="@dimen/accueil_text_size"
             android:layout_marginLeft="200dp"/>
+
+        <ImageView
+            android:id="@+id/booking_image_profil"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginLeft="220dp"/>
 
         <TextView
             android:id="@+id/booking_Display_Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
             android:textSize="@dimen/accueil_text_size" />
 
         <TextView
@@ -34,30 +39,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="90dp"
+            android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
             android:textSize="@dimen/accueil_text_size" />
 
         <Button
             android:id="@+id/buttonAnnuler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:onClick="Annuler"
             android:text="@string/booking_annuler"
+            android:textSize="@dimen/labelHigh"
             android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:layout_marginTop="165dp" />
+            android:layout_marginRight="100dp"
+            android:layout_marginTop="-20dp" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="640dp"
+        android:layout_width="400dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="250dp">
+        android:layout_marginTop="110dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="280dp"
+            android:layout_height="230dp"
             android:layout_marginTop="20sp"
             android:orientation="horizontal"
             android:weightSum="1">
@@ -65,55 +71,67 @@
             <NumberPicker
                 android:id="@+id/numberPickerHeureDebut"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_marginStart="130sp"
-                android:layout_marginTop="80sp"
+                android:layout_height="wrap_content"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:layout_marginStart="0sp"
+                android:layout_marginTop="90sp"
                 android:theme="@android:style/Theme.Dialog" />
 
             <NumberPicker
                 android:id="@+id/numberPickerMinDebut"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_marginStart="5sp"
-                android:layout_marginTop="80sp"
+                android:layout_height="wrap_content"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:layout_marginStart="10sp"
+                android:layout_marginTop="90sp"
                 android:theme="@android:style/Theme.Dialog" />
 
             <NumberPicker
                 android:id="@+id/numberPickerDuree"
                 android:layout_width="wrap_content"
-                android:layout_height="147dp"
-                android:layout_marginStart="70sp"
-                android:layout_marginTop="80sp"
+                android:layout_height="wrap_content"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:layout_marginStart="50sp"
+                android:layout_marginTop="90sp"
                 android:theme="@android:style/Theme.Dialog" />
 
 
             <NumberPicker
                 android:id="@+id/numberPickerDuree2"
                 android:layout_width="wrap_content"
-                android:layout_height="147dp"
-                android:layout_marginStart="5sp"
-                android:layout_marginTop="80sp"
+                android:layout_height="wrap_content"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:layout_marginStart="10sp"
+                android:layout_marginTop="90sp"
                 android:theme="@android:style/Theme.Dialog" />
         </LinearLayout>
 
         <Spinner
             android:id="@+id/booking_spinnerTerrain"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="70dp"
             android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="200sp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="90sp"
+            android:scaleX="1.3"
+            android:scaleY="1.3"
             android:background="@android:color/white"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/label" />
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/buttonValider"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:onClick="Valider"
             android:text="@string/booking_valider"
+            android:backgroundTint="@color/colorBlue"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/labelHigh"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="60dp"
             android:layout_marginRight="50dp"/>
     </LinearLayout>
 </LinearLayout>

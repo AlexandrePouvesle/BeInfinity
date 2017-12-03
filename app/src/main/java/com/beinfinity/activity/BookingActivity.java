@@ -4,17 +4,22 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +47,7 @@ public class BookingActivity extends AppCompatActivity {
     private TextView textViewTitle;
     private TextView textViewDateJour;
     private TextView textViewDisplayName;
+    private ImageView imageProfil;
     private Spinner spinnerTerrain;
     private NumberPicker numberDuree;
     private NumberPicker numberDuree2;
@@ -50,6 +56,7 @@ public class BookingActivity extends AppCompatActivity {
 
     private String abonne;
     private String idCard;
+    private String urlProfilImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,16 +72,17 @@ public class BookingActivity extends AppCompatActivity {
         this.numberDuree2 = (NumberPicker) findViewById(R.id.numberPickerDuree2);
         this.numberMinDebut = (NumberPicker) findViewById(R.id.numberPickerMinDebut);
         this.numberHeureDebut = (NumberPicker) findViewById(R.id.numberPickerHeureDebut);
+        // this.imageProfil = (ImageView)  findViewById(R.id.booking_image_profil);
 
         // Initialisation des variables
-        this.numberDuree.setMinValue(0);
-        this.numberDuree.setMaxValue(4);
+        this.numberDuree.setMinValue(1);
+        this.numberDuree.setMaxValue(10);
         this.numberDuree.setWrapSelectorWheel(true);
         this.numberDuree.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         this.numberDuree2.setMinValue(0);
         this.numberDuree2.setMaxValue(1);
         this.numberDuree2.setWrapSelectorWheel(true);
-        this.numberDuree2.setDisplayedValues(new String[]{"0", "30"});
+        this.numberDuree2.setDisplayedValues(new String[]{"00", "30"});
         this.numberDuree2.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         this.numberHeureDebut.setMinValue(0);
         this.numberHeureDebut.setMaxValue(23);
@@ -83,7 +91,7 @@ public class BookingActivity extends AppCompatActivity {
         this.numberMinDebut.setMinValue(0);
         this.numberMinDebut.setMaxValue(1);
         this.numberMinDebut.setWrapSelectorWheel(true);
-        this.numberMinDebut.setDisplayedValues(new String[]{"0", "30"});
+        this.numberMinDebut.setDisplayedValues(new String[]{"00", "30"});
         this.numberMinDebut.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         this.terrains = new ArrayList<>();
         this.parameters = new HashMap<>();
@@ -94,9 +102,15 @@ public class BookingActivity extends AppCompatActivity {
 
         // Récupération du nom de l'utilisateur
         Intent myIntent = getIntent();
-        this.abonne = myIntent.getStringExtra(getString(R.string.displayName));
+        this.abonne = "Bonjour, " + myIntent.getStringExtra(getString(R.string.displayName));
         this.idCard = myIntent.getStringExtra(getString(R.string.idCard));
+        this.urlProfilImage = myIntent.getStringExtra(getString(R.string.urlImage));
         this.textViewDisplayName.setText(this.abonne);
+
+        if(this.urlProfilImage != null) {
+            new DownloadImageTask((ImageView) findViewById(R.id.booking_image_profil))
+                    .execute(this.urlProfilImage);
+        }
     }
 
     public void Valider(View view) {
@@ -268,6 +282,30 @@ public class BookingActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), getString(R.string.booking_toast), Toast.LENGTH_SHORT).show();
                 finish();
             }
+        }
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                // e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 }
